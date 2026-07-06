@@ -46,7 +46,8 @@ Use the following credentials to access the portal.
 
 ## 📸 Preview
 
-> *(Add your project screenshots here)*
+<img width="1828" height="872" alt="image" src="https://github.com/user-attachments/assets/ee7509a6-c705-4717-88f4-a98a9fc59ff3" />
+
 
 ---
 
