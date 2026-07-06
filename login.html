@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login — S52 NewsPortal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--red:#e63946;--dk:#0d0d0d;--bg:#f7f3ec;--cream:#ede7d8;--gold:#c9a84c;--muted:#7a756b;--bd:#ddd5c2;--w:#fff}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dk);min-height:100vh;display:flex;flex-direction:column}
+a{text-decoration:none;color:inherit}
+
+/* TOPBAR */
+.topbar{background:var(--dk);display:flex;align-items:center;justify-content:space-between;padding:5px 2rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;overflow:hidden}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);animation:blink 1.2s ease-in-out infinite;margin-right:.4rem;vertical-align:middle}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+
+/* HEADER */
+header{background:var(--cream);border-bottom:1px solid var(--bd);padding:1.2rem 2rem .9rem;display:flex;align-items:center;justify-content:space-between;gap:2rem}
+.logo-wrap{display:flex;align-items:center;gap:.9rem}
+.logo-circle{width:52px;height:52px;border-radius:50%;background:var(--dk);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px var(--gold),0 0 0 5px var(--dk),0 0 0 7px var(--gold)}
+.logo-circle span{font-family:'Playfair Display',serif;font-size:1rem;font-weight:900;color:var(--w)}
+.logo-circle span b{color:var(--gold)}
+.site-title{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3vw,2.4rem);font-weight:900;letter-spacing:-.02em}
+.site-title em{color:var(--red);font-style:italic}
+.site-sub{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-top:.2rem}
+
+/* MAIN LOGIN AREA */
+.login-area{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 1.5rem}
+.login-card{background:var(--w);border:1px solid var(--bd);width:100%;max-width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.08)}
+
+.card-header{background:var(--dk);padding:2rem 2rem 1.5rem;text-align:center;position:relative}
+.card-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--red)}
+.card-icon{width:52px;height:52px;border-radius:50%;background:rgba(201,168,76,.15);border:1.5px solid rgba(201,168,76,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--gold)}
+.card-header h1{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--w);margin-bottom:.3rem}
+.card-header p{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:#555;letter-spacing:.12em;text-transform:uppercase}
+
+.card-body{padding:2rem}
+
+.field{margin-bottom:1.3rem}
+.field label{display:block;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.field input{width:100%;padding:.75rem 1rem;border:1.5px solid var(--bd);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--dk);outline:none;transition:border-color .2s,background .2s;border-radius:0}
+.field input:focus{border-color:var(--gold);background:var(--w)}
+.field input::placeholder{color:#bbb}
+
+.hint{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);margin-top:.4rem;display:flex;align-items:center;gap:.3rem}
+.hint::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0}
+
+.login-btn{width:100%;padding:.85rem;background:var(--red);color:var(--w);border:none;font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:background .2s,transform .15s;margin-top:.5rem;position:relative;overflow:hidden}
+.login-btn:hover{background:#c42c38}
+.login-btn:active{transform:scale(.99)}
+.login-btn::after{content:'→';position:absolute;right:1.2rem;top:50%;transform:translateY(-50%);font-size:.9rem;transition:right .2s}
+.login-btn:hover::after{right:.9rem}
+
+.error-box{background:#fff5f5;border:1.5px solid #fcc;padding:.75rem 1rem;margin-bottom:1.2rem;display:none;align-items:center;gap:.6rem}
+.error-box.show{display:flex}
+.error-box svg{flex-shrink:0}
+.error-box span{font-size:.78rem;color:#c0392b;font-family:'DM Sans',sans-serif}
+
+.card-footer{border-top:1px solid var(--bd);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}
+.card-footer span{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted)}
+.back-link{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--red);letter-spacing:.1em;text-transform:uppercase;transition:color .2s}
+.back-link:hover{color:#c42c38}
+
+/* FOOTER */
+footer{background:var(--dk);padding:1rem 2rem;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.55rem;color:#333}
+footer span{color:var(--gold)}
+
+/* Responsive */
+@media(max-width:580px){
+  header{padding:.8rem 1rem}
+  .login-area{padding:1.5rem .8rem}
+  .card-body{padding:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span><span class="live-dot"></span><span style="color:var(--red);font-weight:600">LIVE</span>&nbsp;&nbsp;Wed, 18 Mar 2026</span>
+  <span style="color:#444">Secure Login &nbsp;·&nbsp; S52 NewsPortal</span>
+  <span style="color:#444">Ranchi 28°C ☁</span>
+</div>
+
+<header>
+  <div class="logo-wrap">
+    <div class="logo-circle"><span>S<b>52</b></span></div>
+    <div>
+      <div class="site-title">News<em>Portal</em></div>
+      <div class="site-sub">Truth · Speed · Depth</div>
+    </div>
+  </div>
+  <a href="index.html" style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--bd);padding:.4rem .9rem;transition:color .2s,border-color .2s" onmouseover="this.style.color='var(--red)';this.style.borderColor='var(--red)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--bd)'">← Back to Portal</a>
+</header>
+
+<div class="login-area">
+  <div class="login-card">
+    <div class="card-header">
+      <div class="card-icon">S52</div>
+      <h1>Staff Login</h1>
+      <p>S52 NewsPortal · Secure Access</p>
+    </div>
+    <div class="card-body">
+      <div class="error-box" id="errBox">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="7.5" stroke="#c0392b" stroke-width="1"/>
+          <line x1="8" y1="4.5" x2="8" y2="8.5" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="8" cy="10.5" r=".8" fill="#c0392b"/>
+        </svg>
+        <span id="errMsg">Invalid credentials. Please try again.</span>
+      </div>
+
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" id="nameInput" placeholder="Enter your full name" autocomplete="name"/>
+        <p class="hint">Use your registered name</p>
+      </div>
+      <div class="field">
+        <label>Roll Number</label>
+        <input type="text" id="rollInput" placeholder="Enter your roll number" autocomplete="off"/>
+        <p class="hint">As per student records</p>
+      </div>
+      <button class="login-btn" onclick="doLogin()">Access Portal</button>
+    </div>
+    <div class="card-footer">
+      <span>S52 Edition · Roll No: 52</span>
+      <a href="index.html" class="back-link">← Home</a>
+    </div>
+  </div>
+</div>
+
+<footer>&copy; 2026 <span>S52 NewsPortal</span> Media Pvt. Ltd. · Est. 1998</footer>
+
+<script>
+function doLogin(){
+  const name = document.getElementById('nameInput').value.trim().toLowerCase();
+  const roll = document.getElementById('rollInput').value.trim();
+  const errBox = document.getElementById('errBox');
+  const errMsg = document.getElementById('errMsg');
+  const validName = 'srishti pathak';
+  const validRoll = '23190503052';
+  if(name === validName && roll === validRoll){
+    errBox.classList.remove('show');
+    sessionStorage.setItem('s52_logged_in','1');
+    sessionStorage.setItem('s52_user','Srishti Pathak');
+    window.location.href = 'index.html';
+  } else {
+    errBox.classList.add('show');
+    if(name !== validName && roll !== validRoll){
+      errMsg.textContent = 'Name and Roll Number do not match our records.';
+    } else if(name !== validName){
+      errMsg.textContent = 'Name not recognised. Check spelling.';
+    } else {
+      errMsg.textContent = 'Roll Number incorrect. Please try again.';
+    }
+  }
+}
+document.addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
+</script>
+</body>
+</html>
