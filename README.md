@@ -1,11 +1,20 @@
-# News-Portal-Website
+# News Portal Website
 
-S52 NewsPortal · Secure Access
+## Secure Access
 
-Full Name
-Srishti Pathak
+To access the News Portal, use the following credentials:
 
-Roll Number
-23190503052
+**Portal:** S52 NewsPortal · Secure Access
+
+| Field | Value |
+|-------|-------|
+| **Full Name** | Srishti Pathak |
+| **Roll Number** | 23190503052 |
+
+### Steps to Access
+1. Open the website.
+2. Enter the **Full Name**: `Srishti Pathak`
+3. Enter the **Roll Number**: `23190503052`
+4. Click **Access Portal** to enter the News Portal.
 
 
