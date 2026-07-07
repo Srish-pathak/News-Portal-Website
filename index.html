@@ -1,170 +1,213 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>S52 NewsPortal — Live News</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Firebase (compat SDK — no build tooling required) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--red:#e63946;--dk:#0d0d0d;--bg:#f7f3ec;--cream:#ede7d8;--gold:#c9a84c;--muted:#7a756b;--bd:#ddd5c2;--w:#fff;--nh:52px}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dk)}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0f1521; --navy-2:#161d2e;
+  --azure:#3366ff; --azure-dark:#2350d6; --azure-light:#eaf0ff;
+  --coral:#ff5a5f;
+  --gold:#e0a83e;
+  --bg:#f4f6fb; --surface:#ffffff;
+  --ink:#12172a; --muted:#6b7385; --faint:#9aa2b4;
+  --border:#e4e8f1;
+  --radius:16px; --radius-sm:10px;
+  --shadow-sm:0 1px 2px rgba(15,21,33,.05), 0 1px 3px rgba(15,21,33,.06);
+  --shadow-md:0 8px 24px rgba(15,21,33,.08);
+  --shadow-lg:0 24px 64px rgba(15,21,33,.16);
+  --nh:60px;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+body{font-family:var(--font-body);background:var(--bg);color:var(--ink)}
 a{text-decoration:none;color:inherit}
+button{font-family:inherit}
+:focus-visible{outline:2.5px solid var(--azure);outline-offset:2px;border-radius:4px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}}
+
+/* SKIP LINK */
+.skip-link{position:absolute;left:-999px;top:0;background:var(--azure);color:#fff;padding:.6rem 1rem;z-index:10001;border-radius:0 0 8px 0;font-family:var(--font-mono);font-size:.75rem}
+.skip-link:focus{left:0}
 
 /* AUTH GUARD */
-#authGuard{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:1rem}
+#authGuard{display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:1rem;text-align:center;padding:1.5rem}
 #authGuard.show{display:flex}
-#authGuard p{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted)}
-#authGuard a{background:var(--red);color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;padding:.7rem 1.8rem}
+#authGuard .spin{width:26px;height:26px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--azure);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#authGuard p{font-family:var(--font-mono);font-size:.7rem;color:var(--muted)}
+#authGuard a{background:var(--azure);color:#fff;font-family:var(--font-display);font-weight:600;font-size:.8rem;padding:.75rem 1.8rem;border-radius:var(--radius-sm);transition:background .18s}
+#authGuard a:hover{background:var(--azure-dark)}
 
 /* TOP BAR */
-.topbar{background:var(--dk);display:flex;align-items:center;justify-content:space-between;padding:5px 2rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;gap:1rem;overflow:hidden}
-.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);animation:blink 1.2s ease-in-out infinite;margin-right:.4rem;vertical-align:middle}
-@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
-.top-roll{flex:1;overflow:hidden}
+.topbar{background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:.4rem 2rem;font-family:var(--font-mono);font-size:.66rem;color:#8b93a7;gap:1rem;overflow:hidden}
+.live-dot{position:relative;display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--coral);margin-right:.5rem;vertical-align:middle}
+.live-dot::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1.5px solid var(--coral);animation:ping 1.6s ease-out infinite}
+@keyframes ping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.8);opacity:0}}
+.top-roll{flex:1;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent);mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
 .top-inner{display:flex;animation:tscroll 45s linear infinite;white-space:nowrap}
-.top-inner span{padding:0 2.4rem;color:#777;border-right:1px solid #222;font-size:.57rem}
+.top-inner span{padding:0 2.2rem;color:#7d8497;border-right:1px solid #232a3a;font-size:.64rem}
 @keyframes tscroll{to{transform:translateX(-50%)}}
-.topbar-user{white-space:nowrap;display:flex;align-items:center;gap:.6rem;color:#666}
-.topbar-user span{color:#888}
+.topbar-user{white-space:nowrap;display:flex;align-items:center;gap:.6rem;color:#8b93a7}
+.topbar-user span{color:#a7adbd}
 
 /* HEADER */
-header{background:var(--cream);border-bottom:1px solid var(--bd);padding:1.2rem 2rem .9rem;display:flex;align-items:center;justify-content:space-between;gap:2rem}
-.logo-wrap{display:flex;align-items:center;gap:.9rem;flex-shrink:0}
-.logo-circle{width:58px;height:58px;border-radius:50%;background:var(--dk);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px var(--gold),0 0 0 5px var(--dk),0 0 0 7px var(--gold)}
-.logo-circle span{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:var(--w)}
-.logo-circle span b{color:var(--gold)}
-.site-title{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.5vw,2.8rem);font-weight:900;letter-spacing:-.02em}
-.site-title em{color:var(--red);font-style:italic}
-.site-sub{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-top:.2rem}
-.hdr-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}
-.hdr-date{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--muted);line-height:1.9}
-.hdr-date strong{color:var(--dk);display:block;font-size:.62rem}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:1.1rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:2rem}
+.logo-wrap{display:flex;align-items:center;gap:.8rem;flex-shrink:0}
+.logo-mark{width:48px;height:48px;border-radius:13px;background:linear-gradient(155deg,var(--azure),var(--azure-dark));display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
+.logo-mark span{font-family:var(--font-display);font-size:.85rem;font-weight:700;color:#fff;letter-spacing:-.02em}
+.site-title{font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2rem);font-weight:700;letter-spacing:-.02em}
+.site-title em{color:var(--azure);font-style:normal}
+.site-sub{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:.15rem}
+.hdr-right{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:.55rem}
+.hdr-date{font-family:var(--font-mono);font-size:.6rem;color:var(--muted);line-height:1.8}
+.hdr-date strong{color:var(--ink);display:block;font-size:.65rem}
 
 /* USER BADGE */
-.user-badge{display:flex;align-items:center;gap:.6rem;background:var(--dk);padding:.4rem .8rem .4rem .5rem;border-radius:2px}
-.user-avatar{width:26px;height:26px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.65rem;font-weight:900;color:var(--dk);flex-shrink:0}
-.user-name{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:#aaa;white-space:nowrap}
-.user-name strong{color:var(--w);display:block;font-size:.6rem}
+.user-badge{display:flex;align-items:center;gap:.6rem;background:var(--navy);padding:.4rem .9rem .4rem .5rem;border-radius:999px}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.65rem;font-weight:700;color:var(--navy);flex-shrink:0}
+.user-name{font-family:var(--font-mono);font-size:.58rem;color:#a7adbd;white-space:nowrap}
+.user-name strong{color:#fff;display:block;font-size:.62rem}
 
 /* STICKY NAV */
-nav{position:sticky;top:0;z-index:999;background:var(--dk);height:var(--nh);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;border-bottom:2px solid var(--red)}
-.nav-logo{display:flex;align-items:center;gap:.6rem;color:var(--w);font-family:'Playfair Display',serif;font-weight:700;font-size:.95rem}
-.nav-badge{background:var(--gold);color:var(--dk);font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;padding:3px 8px;border-radius:2px}
-nav ul{display:flex;list-style:none;height:100%}
-nav ul a{display:flex;align-items:center;padding:0 1rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:#888;height:100%;position:relative;transition:color .2s}
-nav ul a::after{content:'';position:absolute;bottom:0;left:1rem;right:1rem;height:2px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .25s}
-nav ul a:hover,nav ul a.on{color:var(--w)}
+nav{position:sticky;top:0;z-index:999;background:var(--navy);height:var(--nh);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;box-shadow:0 1px 0 rgba(255,255,255,.05)}
+.nav-logo{display:flex;align-items:center;gap:.6rem;color:#fff;font-family:var(--font-display);font-weight:700;font-size:.95rem}
+.nav-badge{background:var(--azure);color:#fff;font-family:var(--font-mono);font-size:.6rem;font-weight:600;padding:3px 9px;border-radius:999px}
+nav ul{display:flex;list-style:none;height:100%;gap:.2rem}
+nav ul a{display:flex;align-items:center;padding:0 1.1rem;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;color:#8b93a7;height:100%;position:relative;transition:color .18s}
+nav ul a::after{content:'';position:absolute;bottom:0;left:1.1rem;right:1.1rem;height:2.5px;background:var(--azure);border-radius:2px 2px 0 0;transform:scaleX(0);transform-origin:left;transition:transform .22s}
+nav ul a:hover,nav ul a.on{color:#fff}
 nav ul a:hover::after,nav ul a.on::after{transform:scaleX(1)}
 
 /* LOGOUT BUTTON */
-.logout-btn{display:flex;align-items:center;gap:.5rem;padding:.42rem .9rem;background:transparent;border:1px solid #2a2a2a;color:#666;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap;border-radius:2px}
-.logout-btn:hover{border-color:var(--red);color:var(--red)}
-.logout-btn svg{transition:transform .2s}
+.logout-btn{display:flex;align-items:center;gap:.5rem;padding:.45rem 1rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:#a7adbd;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.05em;cursor:pointer;transition:all .18s;white-space:nowrap;border-radius:999px}
+.logout-btn:hover{border-color:var(--coral);color:var(--coral);background:rgba(255,90,95,.08)}
+.logout-btn svg{transition:transform .18s}
 .logout-btn:hover svg{transform:translateX(2px)}
 
 .nav-right{display:flex;align-items:center;gap:.8rem}
-.hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer}
-.hbg span{width:22px;height:2px;background:var(--w);display:block}
+.hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:.4rem}
+.hbg span{width:22px;height:2px;background:#fff;display:block;border-radius:1px}
 
 /* BREAKING TICKER */
-.ticker{background:var(--red);height:34px;display:flex;align-items:center;overflow:hidden}
-.tick-lbl{background:#b02030;color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;letter-spacing:.16em;padding:0 1rem;height:100%;display:flex;align-items:center;white-space:nowrap;flex-shrink:0;gap:.4rem}
+.ticker{background:linear-gradient(90deg,var(--coral),#ff7a7e);height:36px;display:flex;align-items:center;overflow:hidden}
+.tick-lbl{background:rgba(0,0,0,.18);color:#fff;font-family:var(--font-mono);font-size:.62rem;font-weight:600;letter-spacing:.12em;padding:0 1.1rem;height:100%;display:flex;align-items:center;white-space:nowrap;flex-shrink:0;gap:.4rem}
 .tick-track{display:flex;animation:tick 35s linear infinite;white-space:nowrap}
-.tick-track span{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--w);padding:0 2.2rem;border-right:1px solid rgba(255,255,255,.22);letter-spacing:.04em}
+.tick-track span{font-family:var(--font-mono);font-size:.64rem;color:#fff;padding:0 2.1rem;border-right:1px solid rgba(255,255,255,.28)}
 @keyframes tick{to{transform:translateX(-50%)}}
 
 /* HERO */
-.hero-wrap{max-width:1160px;margin:2rem auto;padding:0 1.5rem}
-.hero{display:grid;grid-template-columns:1fr 295px;border:1px solid var(--bd);box-shadow:0 8px 48px rgba(0,0,0,.1);background:var(--w);overflow:hidden}
+.hero-wrap{max-width:1180px;margin:2rem auto;padding:0 1.5rem}
+.hero{display:grid;grid-template-columns:1fr 300px;border-radius:var(--radius);box-shadow:var(--shadow-lg);background:var(--surface);overflow:hidden}
 .hero-main{position:relative;min-height:440px;overflow:hidden;cursor:pointer}
 .hero-main svg{position:absolute;inset:0;width:100%;height:100%;transition:transform .7s ease}
 .hero-main:hover svg{transform:scale(1.04)}
-.hero-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,4,2,.97) 0%,rgba(8,4,2,.35) 55%,transparent 100%)}
+.hero-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,10,18,.94) 0%,rgba(8,10,18,.3) 55%,transparent 100%)}
 .hero-content{position:absolute;bottom:0;left:0;right:0;padding:2rem 2.2rem}
-.h-tag{display:inline-block;background:var(--red);color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;padding:3px 10px;margin-bottom:.65rem}
-.hero-content h1{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,2.4vw,2.1rem);font-weight:900;color:var(--w);line-height:1.18;margin-bottom:.6rem}
-.hero-content p{font-size:.83rem;color:rgba(255,255,255,.68);line-height:1.65;max-width:500px}
-.hero-meta{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:rgba(255,255,255,.38);display:block;margin-top:.6rem;letter-spacing:.06em}
-.live-chip{display:inline-flex;align-items:center;gap:.3rem;background:var(--red);color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.5rem;padding:2px 6px;border-radius:2px;letter-spacing:.08em;vertical-align:middle}
+.h-tag{display:inline-block;background:var(--coral);color:#fff;font-family:var(--font-mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 11px;border-radius:999px;margin-bottom:.7rem}
+.hero-content h1{font-family:var(--font-display);font-size:clamp(1.35rem,2.3vw,2rem);font-weight:700;color:#fff;line-height:1.2;margin-bottom:.6rem;letter-spacing:-.01em}
+.hero-content p{font-size:.85rem;color:rgba(255,255,255,.72);line-height:1.6;max-width:500px}
+.hero-meta{font-family:var(--font-mono);font-size:.58rem;color:rgba(255,255,255,.42);display:block;margin-top:.65rem}
+.live-chip{display:inline-flex;align-items:center;gap:.35rem;background:var(--coral);color:#fff;font-family:var(--font-mono);font-size:.52rem;padding:2px 7px;border-radius:999px;vertical-align:middle}
 
 /* HERO SIDEBAR */
-.hero-side{display:flex;flex-direction:column;border-left:1px solid var(--bd)}
-.ss{padding:1rem 1.1rem;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .2s;position:relative;overflow:hidden}
-.ss::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:.2s}
-.ss:hover{background:#fdf8f0}
-.ss:hover::before{background:var(--red)}
+.hero-side{display:flex;flex-direction:column;border-left:1px solid var(--border)}
+.ss{padding:1.05rem 1.15rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background .18s;position:relative}
+.ss::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:.18s;border-radius:0 3px 3px 0}
+.ss:hover{background:#f7f9ff}
+.ss:hover::before{background:var(--azure)}
 .ss:last-child{border-bottom:none}
-.ss-cat{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.13em;color:var(--red);text-transform:uppercase;font-weight:600;margin-bottom:.2rem}
-.ss h3{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:700;line-height:1.3;color:var(--dk)}
-.ss small{font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--muted);display:block;margin-top:.25rem}
+.ss-cat{font-family:var(--font-mono);font-size:.56rem;letter-spacing:.1em;color:var(--azure);text-transform:uppercase;font-weight:600;margin-bottom:.25rem}
+.ss h3{font-family:var(--font-display);font-size:.87rem;font-weight:600;line-height:1.32;color:var(--ink)}
+.ss small{font-family:var(--font-mono);font-size:.55rem;color:var(--muted);display:block;margin-top:.3rem}
 
 /* SECTION HEADER */
-.sec-wrap{max-width:1160px;margin:0 auto;padding:0 1.5rem}
-.sec-head{display:flex;align-items:center;gap:.8rem;margin:2.5rem 0 1.2rem}
-.sec-head::before{content:'';width:4px;height:24px;background:var(--red);border-radius:2px;flex-shrink:0}
-.sec-head h2{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;white-space:nowrap}
-.sec-head::after{content:'';flex:1;height:1px;background:var(--bd)}
+.sec-wrap{max-width:1180px;margin:0 auto;padding:0 1.5rem}
+.sec-head{display:flex;align-items:center;gap:.8rem;margin:2.6rem 0 1.3rem}
+.sec-head::before{content:'';width:4px;height:24px;background:var(--azure);border-radius:2px;flex-shrink:0}
+.sec-head h2{font-family:var(--font-display);font-size:1.25rem;font-weight:700;white-space:nowrap;letter-spacing:-.01em}
+.sec-head::after{content:'';flex:1;height:1px;background:var(--border)}
 
 /* CARDS */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:1.3rem;margin-bottom:3rem}
-.card{background:var(--w);border:1px solid var(--bd);overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .28s;position:relative}
-.card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--red);transform:scaleX(0);transition:transform .3s;transform-origin:left}
-.card:hover{transform:translateY(-6px);box-shadow:0 18px 48px rgba(0,0,0,.12)}
-.card:hover::after{transform:scaleX(1)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:1.4rem;margin-bottom:3rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .28s;box-shadow:var(--shadow-sm)}
+.card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md)}
 .ci{position:relative;height:175px;overflow:hidden}
 .ci svg{width:100%;height:100%;display:block;transition:transform .5s ease}
-.card:hover .ci svg{transform:scale(1.09)}
-.ci-badge{position:absolute;top:10px;left:10px;background:var(--red);color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.54rem;letter-spacing:.13em;text-transform:uppercase;padding:3px 9px;z-index:2}
-.ci::after{content:'Read Story →';position:absolute;inset:0;background:rgba(13,10,6,.83);color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;z-index:3}
+.card:hover .ci svg{transform:scale(1.08)}
+.ci-badge{position:absolute;top:10px;left:10px;background:rgba(15,21,33,.72);backdrop-filter:blur(3px);color:#fff;font-family:var(--font-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:999px;z-index:2}
+.ci::after{content:'Read Story →';position:absolute;inset:0;background:rgba(15,21,33,.82);color:#fff;font-family:var(--font-display);font-weight:600;font-size:.72rem;letter-spacing:.02em;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .28s;z-index:3}
 .card:hover .ci::after{opacity:1}
-.cb{padding:.9rem 1rem 1rem}
-.cb h3{font-family:'Playfair Display',serif;font-size:.93rem;font-weight:700;line-height:1.3;transition:color .22s}
-.card:hover .cb h3{color:var(--red)}
-.cb p{font-size:.76rem;color:var(--muted);line-height:1.55;margin-top:.3rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.cf{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--muted);margin-top:.6rem;padding-top:.55rem;border-top:1px solid var(--bd)}
+.cb{padding:1rem 1.1rem 1.1rem}
+.cb h3{font-family:var(--font-display);font-size:.92rem;font-weight:600;line-height:1.34;transition:color .2s}
+.card:hover .cb h3{color:var(--azure)}
+.cb p{font-size:.78rem;color:var(--muted);line-height:1.55;margin-top:.35rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cf{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:.55rem;color:var(--muted);margin-top:.65rem;padding-top:.6rem;border-top:1px solid var(--border)}
+
+/* SKELETON LOADING */
+.skel-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.skel-block{background:linear-gradient(90deg,#eceff5 25%,#f5f7fb 37%,#eceff5 63%);background-size:400% 100%;animation:shimmer 1.4s ease infinite}
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:0 0}}
+.skel-img{height:175px}
+.skel-line{height:12px;border-radius:4px;margin:1rem 1.1rem .6rem}
+.skel-line.w60{width:60%}
+.skel-line.w40{height:9px;width:40%;margin-top:1.4rem}
+.grid.is-loading .card{display:none}
+.grid:not(.is-loading) .skel-card{display:none}
 
 /* LOGOUT CONFIRM MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;align-items:center;justify-content:center}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(10,13,22,.6);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
 .modal-overlay.show{display:flex}
-.modal{background:var(--w);border:1px solid var(--bd);max-width:360px;width:90%;padding:2rem;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.modal-icon{width:48px;height:48px;border-radius:50%;background:#fff5f5;border:1.5px solid #fcc;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
-.modal h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;margin-bottom:.4rem}
-.modal p{font-size:.8rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6}
+.modal{background:var(--surface);border-radius:var(--radius);max-width:370px;width:90%;padding:2rem;text-align:center;box-shadow:var(--shadow-lg);animation:pop .22s cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-icon{width:50px;height:50px;border-radius:14px;background:#fff2f2;border:1px solid #ffd3d4;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.modal h3{font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:.4rem}
+.modal p{font-size:.82rem;color:var(--muted);margin-bottom:1.6rem;line-height:1.6}
 .modal-btns{display:flex;gap:.8rem}
-.modal-btns button{flex:1;padding:.7rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s}
-.btn-cancel{background:transparent;border:1px solid var(--bd);color:var(--muted)}
-.btn-cancel:hover{border-color:var(--dk);color:var(--dk)}
-.btn-confirm{background:var(--red);border:1px solid var(--red);color:var(--w)}
-.btn-confirm:hover{background:#c42c38;border-color:#c42c38}
+.modal-btns button{flex:1;padding:.75rem;font-family:var(--font-display);font-size:.72rem;font-weight:600;cursor:pointer;border-radius:var(--radius-sm);transition:all .18s}
+.btn-cancel{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-cancel:hover{border-color:var(--ink);color:var(--ink)}
+.btn-confirm{background:var(--coral);border:1px solid var(--coral);color:#fff}
+.btn-confirm:hover{background:#e2474c;border-color:#e2474c}
 
 /* FOOTER */
-footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
-.fi{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid #1c1c1c}
-.fb-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.65rem}
-.fb-circle{width:40px;height:40px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.95rem;font-weight:900;color:var(--dk)}
-.fb-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--w)}
-.fb-name em{color:var(--red);font-style:italic}
-.fb p{font-size:.76rem;color:#444;line-height:1.75}
-.fc h4{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;padding-bottom:.38rem;border-bottom:1px solid #1c1c1c}
-.fc ul{list-style:none}.fc li{margin-bottom:.38rem}
-.fc a{color:#444;font-size:.76rem;transition:color .2s}.fc a:hover{color:var(--red)}
-.fc address{font-style:normal;font-size:.76rem;color:#444;line-height:2}
-.fbot{max-width:1160px;margin:.9rem auto 0;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:.55rem;color:#2d2d2d}
-.fbot a{color:#333}.fbot a:hover{color:var(--red)}
+footer{background:var(--navy);color:#7d8497;padding:2.6rem 2rem 1.3rem}
+.fi{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:2.5rem;padding-bottom:1.6rem;border-bottom:1px solid #212a3c}
+.fb-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.7rem}
+.fb-mark{width:42px;height:42px;border-radius:12px;background:linear-gradient(155deg,var(--azure),var(--azure-dark));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.8rem;font-weight:700;color:#fff}
+.fb-name{font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:#fff}
+.fb-name em{color:var(--azure);font-style:normal}
+.fb p{font-size:.78rem;color:#7d8497;line-height:1.75}
+.fc h4{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;color:var(--azure);margin-bottom:.85rem;padding-bottom:.4rem;border-bottom:1px solid #212a3c}
+.fc ul{list-style:none}.fc li{margin-bottom:.4rem}
+.fc a{color:#7d8497;font-size:.78rem;transition:color .18s}.fc a:hover{color:#fff}
+.fc address{font-style:normal;font-size:.78rem;color:#7d8497;line-height:2}
+.fbot{max-width:1180px;margin:.9rem auto 0;display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:.56rem;color:#4a5064}
+.fbot a{color:#5b6274}.fbot a:hover{color:#fff}
 
 /* RESPONSIVE */
 @media(max-width:900px){
   header{flex-wrap:wrap}.hdr-right{order:3;width:100%;align-items:center}
   .hero{grid-template-columns:1fr}.hero-main{min-height:360px}
-  .hero-side{border-left:none;border-top:1px solid var(--bd);display:grid;grid-template-columns:1fr 1fr}
+  .hero-side{border-left:none;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr}
   .fi{grid-template-columns:1fr 1fr}.fb{grid-column:1/-1}
 }
 @media(max-width:580px){
   .topbar{display:none}
-  nav ul{display:none;position:absolute;top:var(--nh);left:0;right:0;background:var(--dk);flex-direction:column;height:auto;border-top:2px solid var(--red)}
+  nav ul{display:none;position:absolute;top:var(--nh);left:0;right:0;background:var(--navy);flex-direction:column;height:auto;box-shadow:0 8px 24px rgba(0,0,0,.3)}
   nav ul.open{display:flex}
-  nav ul a{padding:.82rem 1.5rem;height:auto;border-bottom:1px solid #1a1a1a}
+  nav ul a{padding:.85rem 1.5rem;height:auto;border-bottom:1px solid #1b2233}
   nav ul a::after{display:none}
   .hbg{display:flex}
   .logout-btn span{display:none}
@@ -178,24 +221,27 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
 </head>
 <body>
 
+<a href="#main" class="skip-link">Skip to content</a>
+
 <!-- AUTH GUARD -->
-<div class="authGuard" id="authGuard" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;gap:1rem">
-  <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900">News<em style="color:var(--red);font-style:italic">Portal</em></div>
-  <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);letter-spacing:.1em">ACCESS RESTRICTED — PLEASE LOG IN</p>
-  <a href="login.html" style="background:var(--red);color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;padding:.7rem 1.8rem;margin-top:.5rem">→ Go to Login</a>
+<div class="authGuard" id="authGuard">
+  <div class="spin" role="status" aria-label="Checking session"></div>
+  <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:700">News<em style="color:var(--azure)">Portal</em></div>
+  <p id="guardMsg">Checking your session…</p>
+  <a href="login.html" id="guardLink" style="display:none">→ Go to Login</a>
 </div>
 
 <!-- LOGOUT CONFIRM MODAL -->
-<div class="modal-overlay" id="logoutModal">
+<div class="modal-overlay" id="logoutModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <div class="modal-icon">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M13 3h4a1 1 0 011 1v12a1 1 0 01-1 1h-4" stroke="#e63946" stroke-width="1.5" stroke-linecap="round"/>
-        <path d="M9 14l4-4-4-4" stroke="#e63946" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="13" y1="10" x2="3" y2="10" stroke="#e63946" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M13 3h4a1 1 0 011 1v12a1 1 0 01-1 1h-4" stroke="#ff5a5f" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M9 14l4-4-4-4" stroke="#ff5a5f" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="13" y1="10" x2="3" y2="10" stroke="#ff5a5f" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
     </div>
-    <h3>Sign Out?</h3>
+    <h3 id="modalTitle">Sign Out?</h3>
     <p>You'll be logged out of S52 NewsPortal and redirected to the login page.</p>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
@@ -206,25 +252,21 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
 
 <!-- TOP BAR -->
 <div class="topbar">
-  <span style="white-space:nowrap;flex-shrink:0"><span class="live-dot"></span><span style="color:var(--red);font-weight:600">LIVE</span>&nbsp;&nbsp;Wed, 18 Mar 2026</span>
+  <span style="white-space:nowrap;flex-shrink:0"><span class="live-dot"></span><span style="color:var(--coral);font-weight:600">LIVE</span>&nbsp;&nbsp;Tue, 07 Jul 2026</span>
   <div class="top-roll">
     <div class="top-inner">
-      <span>🔴 US-Israel strikes on Iran enter Day 19 — Strait of Hormuz remains closed, oil above $102/barrel</span>
-      <span>🇮🇳 India evacuates 550+ citizens from Iran; Jaishankar thanks Armenia for safe transit</span>
-      <span>💥 Israel says it killed Iran security chief Ali Larijani &amp; Basij commander Soleimani in overnight strikes</span>
-      <span>🏛️ Lok Sabha rejects Opposition no-confidence motion against Speaker Om Birla</span>
-      <span>🔥 10 killed in ICU fire at SCB Medical College, Cuttack — Odisha orders judicial probe</span>
-      <span>📈 Sensex crosses 75,000 — Indian markets at record high amid global volatility</span>
-      <span>✈️ Dubai International Airport resumes flights after drone strike disruption</span>
-      <span>🚀 ISRO completes CE20 cryogenic engine ground test for LVM3 heavy-lift rocket</span>
-      <span>🔴 US-Israel strikes on Iran enter Day 19 — Strait of Hormuz remains closed, oil above $102/barrel</span>
-      <span>🇮🇳 India evacuates 550+ citizens from Iran; Jaishankar thanks Armenia for safe transit</span>
-      <span>💥 Israel says it killed Iran security chief Ali Larijani &amp; Basij commander Soleimani in overnight strikes</span>
-      <span>🏛️ Lok Sabha rejects Opposition no-confidence motion against Speaker Om Birla</span>
-      <span>🔥 10 killed in ICU fire at SCB Medical College, Cuttack — Odisha orders judicial probe</span>
-      <span>📈 Sensex crosses 75,000 — Indian markets at record high amid global volatility</span>
-      <span>✈️ Dubai International Airport resumes flights after drone strike disruption</span>
-      <span>🚀 ISRO completes CE20 cryogenic engine ground test for LVM3 heavy-lift rocket</span>
+      <span>🕊️ Dayslong funeral for Iran's slain Supreme Leader Khamenei continues in Qom; burial set for Thursday in Mashhad</span>
+      <span>🇮🇳 Mumbai under red alert as monsoon dumps a month's rain in four days; schools shut, 300 trees down</span>
+      <span>📈 Sensex gains for 4th straight session, closes at 78,285; Nifty settles above 24,400</span>
+      <span>🏛️ Parliament's Monsoon Session to run July 20 – August 13, with delimitation bill on the agenda</span>
+      <span>⚽ FIFA World Cup: England edge Mexico 3-2 in Round of 16; Argentina face Egypt today</span>
+      <span>🛢️ Tanker struck off Oman near Strait of Hormuz as fragile US-Iran ceasefire holds</span>
+      <span>🕊️ Dayslong funeral for Iran's slain Supreme Leader Khamenei continues in Qom; burial set for Thursday in Mashhad</span>
+      <span>🇮🇳 Mumbai under red alert as monsoon dumps a month's rain in four days; schools shut, 300 trees down</span>
+      <span>📈 Sensex gains for 4th straight session, closes at 78,285; Nifty settles above 24,400</span>
+      <span>🏛️ Parliament's Monsoon Session to run July 20 – August 13, with delimitation bill on the agenda</span>
+      <span>⚽ FIFA World Cup: England edge Mexico 3-2 in Round of 16; Argentina face Egypt today</span>
+      <span>🛢️ Tanker struck off Oman near Strait of Hormuz as fragile US-Iran ceasefire holds</span>
     </div>
   </div>
   <div class="topbar-user">
@@ -237,120 +279,103 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
 <!-- HEADER -->
 <header>
   <div class="logo-wrap">
-    <div class="logo-circle"><span>S<b>52</b></span></div>
+    <div class="logo-mark"><span>S52</span></div>
     <div>
       <div class="site-title">News<em>Portal</em></div>
       <div class="site-sub">Truth · Speed · Depth</div>
     </div>
   </div>
-  <div></div>
   <div class="hdr-right">
-    <div class="hdr-date">
-      <strong>WEDNESDAY, MARCH 18, 2026</strong>
-      Roll No: 52 &nbsp;·&nbsp; S52 Edition &nbsp;·&nbsp; Est. 1998
-    </div>
-    <div class="user-badge" id="userBadge">
-      <div class="user-avatar" id="userAvatar">SP</div>
-      <div class="user-name"><strong id="userName">Srishti Pathak</strong>Staff Member</div>
+    <div class="hdr-date"><strong>Tuesday, 07 July 2026</strong>Ranchi Edition · Roll No: 52</div>
+    <div class="user-badge">
+      <div class="user-avatar" id="userAvatar">··</div>
+      <div class="user-name">Signed in as<strong id="userName">—</strong></div>
     </div>
   </div>
 </header>
 
 <!-- STICKY NAV -->
-<nav>
-  <div class="nav-logo"><span class="nav-badge">S52</span><span>NewsPortal</span></div>
+<nav aria-label="Primary">
+  <div class="nav-logo">S52 <span class="nav-badge">LIVE</span></div>
   <ul id="navLinks">
-    <li><a href="index.html" class="on">Home</a></li>
+    <li><a href="index.html" class="on" aria-current="page">Home</a></li>
     <li><a href="#">Politics</a></li>
     <li><a href="#">Sports</a></li>
     <li><a href="#">Technology</a></li>
+    <li><a href="#">World</a></li>
+    <li><a href="#">Economy</a></li>
     <li><a href="contact.html">Contact</a></li>
   </ul>
   <div class="nav-right">
-    <button class="logout-btn" onclick="showLogoutModal()">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-        <path d="M11 3h3a1 1 0 011 1v8a1 1 0 01-1 1h-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-        <path d="M7 11l4-3-4-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-        <line x1="11" y1="8" x2="3" y2="8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-      </svg>
-      <span>Logout</span>
+    <button class="logout-btn" onclick="showLogoutModal()" aria-haspopup="dialog">
+      <span>Sign Out</span>
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M13 3h4a1 1 0 011 1v12a1 1 0 01-1 1h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M9 14l4-4-4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="13" y1="10" x2="3" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     </button>
-    <button class="hbg" id="menuBtn"><span></span><span></span><span></span></button>
+    <button class="hbg" id="menuBtn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
   </div>
 </nav>
 
 <!-- BREAKING TICKER -->
 <div class="ticker">
-  <div class="tick-lbl"><span class="live-dot"></span>BREAKING</div>
+  <div class="tick-lbl">⚡ BREAKING</div>
   <div class="tick-track">
-    <span>LIVE: US-Israel war on Iran — Day 19 strikes target Tehran command centres &amp; Kharg Island oil hub</span>
-    <span>Iran confirms Ali Larijani killed; new Supreme Leader Mojtaba Khamenei says "not time for peace"</span>
-    <span>Trump threatens to quit NATO after allies refuse to help reopen Strait of Hormuz</span>
-    <span>India evacuates 550 nationals from Iran via Armenia; MEA issues travel advisory</span>
-    <span>Odisha hospital fire: 10 patients dead, 16 injured in ICU blaze at Cuttack SCB Medical College</span>
-    <span>West Bengal elections 2026: EC announces single-phase polls; BJP releases 144-candidate list</span>
-    <span>LIVE: US-Israel war on Iran — Day 19 strikes target Tehran command centres &amp; Kharg Island oil hub</span>
-    <span>Iran confirms Ali Larijani killed; new Supreme Leader Mojtaba Khamenei says "not time for peace"</span>
-    <span>Trump threatens to quit NATO after allies refuse to help reopen Strait of Hormuz</span>
-    <span>India evacuates 550 nationals from Iran via Armenia; MEA issues travel advisory</span>
-    <span>Odisha hospital fire: 10 patients dead, 16 injured in ICU blaze at Cuttack SCB Medical College</span>
-    <span>West Bengal elections 2026: EC announces single-phase polls; BJP releases 144-candidate list</span>
+    <span>Khamenei's funeral procession moves from Qom toward Najaf and Karbala</span>
+    <span>Mumbai red alert: airport runway ops hit, over 200 flights delayed</span>
+    <span>Argentina vs Egypt kicks off tonight, 9:30 PM IST</span>
+    <span>Parliament's Monsoon Session to table delimitation, women's reservation bills</span>
+    <span>Khamenei's funeral procession moves from Qom toward Najaf and Karbala</span>
+    <span>Mumbai red alert: airport runway ops hit, over 200 flights delayed</span>
+    <span>Argentina vs Egypt kicks off tonight, 9:30 PM IST</span>
+    <span>Parliament's Monsoon Session to table delimitation, women's reservation bills</span>
   </div>
 </div>
 
+<main id="main">
 <!-- HERO -->
 <div class="hero-wrap">
 <section class="hero">
   <div class="hero-main">
-    <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-      <rect width="800" height="450" fill="#0a0608"/>
-      <rect width="800" height="260" fill="#1a0408"/>
-      <rect x="0" y="220" width="800" height="230" fill="#0d1018"/>
-      <ellipse cx="180" cy="180" rx="120" ry="55" fill="#1e0c0c" opacity=".9"/>
-      <ellipse cx="420" cy="140" rx="160" ry="70" fill="#2a0808" opacity=".8"/>
-      <ellipse cx="650" cy="200" rx="110" ry="50" fill="#1e0c0c" opacity=".85"/>
-      <ellipse cx="320" cy="100" rx="90" ry="40" fill="#3a1010" opacity=".7"/>
-      <ellipse cx="580" cy="120" rx="80" ry="35" fill="#2a0c0c" opacity=".75"/>
-      <circle cx="140" cy="240" r="70" fill="#ff4400" opacity=".18"/><circle cx="140" cy="240" r="40" fill="#ff6600" opacity=".22"/><circle cx="140" cy="240" r="18" fill="#ffaa00" opacity=".55"/>
-      <circle cx="620" cy="220" r="60" fill="#ff4400" opacity=".15"/><circle cx="620" cy="220" r="30" fill="#ff6600" opacity=".2"/><circle cx="620" cy="220" r="14" fill="#ffaa00" opacity=".5"/>
-      <rect x="0" y="295" width="800" height="155" fill="#080c14"/>
-      <rect x="10" y="260" width="28" height="50" fill="#0f1520"/><rect x="42" y="245" width="20" height="65" fill="#0f1520"/><rect x="66" y="255" width="35" height="55" fill="#0f1520"/><rect x="105" y="240" width="25" height="70" fill="#0f1520"/><rect x="134" y="250" width="40" height="60" fill="#0f1520"/><rect x="178" y="235" width="30" height="75" fill="#0f1520"/><rect x="212" y="260" width="22" height="50" fill="#0f1520"/><rect x="238" y="245" width="38" height="65" fill="#0f1520"/><rect x="280" y="255" width="28" height="55" fill="#0f1520"/><rect x="312" y="238" width="45" height="72" fill="#0f1520"/><rect x="361" y="250" width="32" height="60" fill="#0f1520"/><rect x="397" y="240" width="28" height="70" fill="#0f1520"/><rect x="429" y="258" width="36" height="52" fill="#0f1520"/><rect x="469" y="242" width="24" height="68" fill="#0f1520"/><rect x="497" y="252" width="40" height="58" fill="#0f1520"/><rect x="541" y="235" width="30" height="75" fill="#0f1520"/><rect x="575" y="248" width="26" height="62" fill="#0f1520"/><rect x="605" y="238" width="42" height="72" fill="#0f1520"/><rect x="651" y="255" width="28" height="55" fill="#0f1520"/><rect x="683" y="244" width="36" height="66" fill="#0f1520"/><rect x="723" y="258" width="24" height="52" fill="#0f1520"/><rect x="751" y="246" width="32" height="64" fill="#0f1520"/>
-      <line x1="680" y1="30" x2="620" y2="220" stroke="#ff6600" stroke-width="1.5" opacity=".6" stroke-dasharray="8,4"/>
-      <line x1="720" y1="20" x2="140" y2="240" stroke="#ff4400" stroke-width="1.5" opacity=".5" stroke-dasharray="8,4"/>
+    <svg viewBox="0 0 800 440" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <rect width="800" height="440" fill="#0a0e1a"/>
+      <ellipse cx="400" cy="380" rx="420" ry="120" fill="#141b2e"/>
+      <circle cx="150" cy="200" r="70" fill="#ff4400" opacity=".12"/><circle cx="150" cy="200" r="40" fill="#ff6600" opacity=".18"/><circle cx="150" cy="200" r="18" fill="#ffaa00" opacity=".5"/>
+      <circle cx="640" cy="230" r="60" fill="#ff4400" opacity=".1"/><circle cx="640" cy="230" r="34" fill="#ff6600" opacity=".16"/><circle cx="640" cy="230" r="15" fill="#ffaa00" opacity=".45"/>
+      <line x1="680" y1="30" x2="620" y2="220" stroke="#ff6600" stroke-width="1.5" opacity=".55" stroke-dasharray="8,4"/>
+      <line x1="720" y1="20" x2="140" y2="240" stroke="#ff4400" stroke-width="1.5" opacity=".45" stroke-dasharray="8,4"/>
     </svg>
     <div class="hero-grad"></div>
     <div class="hero-content">
-      <div class="h-tag">🔴 WORLD — LIVE UPDATE</div>
-      <h1>US-Israel War on Iran Enters Day 19 — Strait of Hormuz Shut, Oil Hits $102; Larijani Killed</h1>
-      <p>Israel confirmed killing Iran's top security chief Ali Larijani and Basij commander Soleimani overnight. Trump threatens to quit NATO as allies refuse Hormuz help. Over 2,300 dead across the region. India evacuates citizens.</p>
-      <span class="hero-meta">NewsPortal World Desk &nbsp;·&nbsp;<span class="live-chip"><span class="live-dot" style="width:5px;height:5px;margin:0"></span>LIVE</span>&nbsp;·&nbsp; Updated 6 min ago &nbsp;·&nbsp; 12 min read</span>
+      <div class="h-tag">🕊️ World — Live Update</div>
+      <h1>Iran Holds Dayslong Funeral for Slain Supreme Leader Khamenei as Fragile US Ceasefire Talks Pause</h1>
+      <p>Thousands of mourners have thronged Tehran and Qom for the state funeral of Ayatollah Ali Khamenei, killed in a US-Israeli strike in February. Talks on a lasting peace deal are on hold until after his burial in Mashhad on Thursday, with Iran's negotiators calling implementation of the ceasefire "difficult, but achievable."</p>
+      <span class="hero-meta">NewsPortal World Desk &nbsp;·&nbsp;<span class="live-chip"><span class="live-dot" style="width:5px;height:5px;margin:0"></span>LIVE</span>&nbsp;·&nbsp; Updated 2 hrs ago &nbsp;·&nbsp; 6 min read</span>
     </div>
   </div>
 
   <aside class="hero-side">
     <div class="ss">
-      <p class="ss-cat">India <span class="live-chip"><span class="live-dot" style="width:5px;height:5px;margin:0"></span>Live</span></p>
-      <h3>India Evacuates 550+ Nationals From Iran Via Armenia — Jaishankar Thanks Yerevan</h3>
-      <small>22 min ago</small>
+      <p class="ss-cat">Sports <span class="live-chip"><span class="live-dot" style="width:5px;height:5px;margin:0"></span>Tonight</span></p>
+      <h3>Messi's Argentina Face Salah's Egypt in World Cup Round of 16 Clash, 9:30 PM IST</h3>
+      <small>Kickoff tonight</small>
     </div>
     <div class="ss">
       <p class="ss-cat">Politics</p>
-      <h3>Lok Sabha Rejects Opposition's No-Confidence Motion Against Speaker Om Birla by Voice Vote</h3>
-      <small>1 hr ago</small>
+      <h3>Parliament's Monsoon Session to Run July 20 – Aug 13; Delimitation Bill Back on the Table</h3>
+      <small>3 hrs ago</small>
     </div>
     <div class="ss">
       <p class="ss-cat">Economy</p>
-      <h3>Sensex Crosses 75,000 — Markets Rally Despite Global Oil Shock From Iran War</h3>
-      <small>2 hrs ago</small>
+      <h3>Sensex Gains for 4th Straight Session, Closes at 78,285 as Nifty Clears 24,400</h3>
+      <small>Yesterday's close</small>
     </div>
     <div class="ss">
-      <p class="ss-cat">Odisha</p>
-      <h3>10 Dead, 16 Burned in ICU Fire at SCB Medical College Cuttack — Judicial Probe Ordered</h3>
-      <small>3 hrs ago</small>
+      <p class="ss-cat">Mumbai</p>
+      <h3>Red Alert in Mumbai as Monsoon Dumps a Month's Rain in Four Days; Schools Shut</h3>
+      <small>Today</small>
     </div>
-    <div class="ss" style="background:#fdf8ee;margin-top:auto">
-      <p style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--muted);letter-spacing:.1em;margin-bottom:.3rem">EDITOR'S PICK</p>
-      <h3 style="font-size:.82rem">India's crude oil supply secure; refineries at full capacity despite Hormuz closure, says Petroleum Ministry</h3>
+    <div class="ss" style="background:var(--azure-light);margin-top:auto">
+      <p style="font-family:var(--font-mono);font-size:.52rem;color:var(--muted);letter-spacing:.1em;margin-bottom:.3rem">EDITOR'S PICK</p>
+      <h3 style="font-size:.82rem">Maritime trackers say nearly a third of ships crossing Hormuz are now hugging the Omani coast for safety</h3>
     </div>
   </aside>
 </section>
@@ -359,11 +384,19 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
 <!-- NEWS CARDS -->
 <div class="sec-wrap">
   <div class="sec-head"><h2>Latest Stories — India &amp; World</h2></div>
-  <div class="grid">
+  <div class="grid is-loading" id="newsGrid">
+
+    <!-- Skeleton placeholders shown while "loading" -->
+    <div class="skel-card" aria-hidden="true"><div class="skel-block skel-img"></div><div class="skel-block skel-line"></div><div class="skel-block skel-line w60"></div><div class="skel-block skel-line w40"></div></div>
+    <div class="skel-card" aria-hidden="true"><div class="skel-block skel-img"></div><div class="skel-block skel-line"></div><div class="skel-block skel-line w60"></div><div class="skel-block skel-line w40"></div></div>
+    <div class="skel-card" aria-hidden="true"><div class="skel-block skel-img"></div><div class="skel-block skel-line"></div><div class="skel-block skel-line w60"></div><div class="skel-block skel-line w40"></div></div>
+    <div class="skel-card" aria-hidden="true"><div class="skel-block skel-img"></div><div class="skel-block skel-line"></div><div class="skel-block skel-line w60"></div><div class="skel-block skel-line w40"></div></div>
+    <div class="skel-card" aria-hidden="true"><div class="skel-block skel-img"></div><div class="skel-block skel-line"></div><div class="skel-block skel-line w60"></div><div class="skel-block skel-line w40"></div></div>
+    <div class="skel-card" aria-hidden="true"><div class="skel-block skel-img"></div><div class="skel-block skel-line"></div><div class="skel-block skel-line w60"></div><div class="skel-block skel-line w40"></div></div>
 
     <article class="card">
       <div class="ci"><span class="ci-badge">World</span>
-        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <rect width="400" height="200" fill="#0a0308"/><rect width="400" height="120" fill="#1a0408"/>
           <ellipse cx="200" cy="110" rx="180" ry="60" fill="#2a0808" opacity=".8"/>
           <circle cx="80" cy="140" r="50" fill="#ff4400" opacity=".15"/><circle cx="80" cy="140" r="28" fill="#ff6600" opacity=".2"/><circle cx="80" cy="140" r="12" fill="#ffaa00" opacity=".6"/>
@@ -373,111 +406,123 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
         </svg>
       </div>
       <div class="cb">
-        <h3>Iran Confirms Larijani Killed; New Supreme Leader Rejects Ceasefire — "Not Time for Peace"</h3>
-        <p>Iran's SNSC confirmed Ali Larijani's death. Mojtaba Khamenei said through intermediaries that negotiations are off the table.</p>
-        <div class="cf"><span>World Desk</span><span>30 min ago</span></div>
+        <h3>Tanker Struck Near Strait of Hormuz as Fragile US-Iran Ceasefire Holds</h3>
+        <p>A tanker was reportedly hit by an unknown projectile off Oman, a maritime tracking agency said. Nearly a third of ships crossing the strait are now hugging the Omani coast for safety.</p>
+        <div class="cf"><span>World Desk</span><span>2 hrs ago</span></div>
       </div>
     </article>
 
     <article class="card">
       <div class="ci"><span class="ci-badge">Politics</span>
-        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <rect width="400" height="200" fill="#141828"/>
           <rect x="80" y="92" width="240" height="88" fill="#1e2a46"/><rect x="100" y="76" width="200" height="19" fill="#28376a"/>
           <rect x="185" y="148" width="30" height="32" rx="3" fill="#0c1322"/>
           <rect x="66" y="178" width="268" height="9" rx="2" fill="#28376a"/>
           <rect x="30" y="60" width="7" height="50" fill="#666"/>
-          <rect x="37" y="60" width="28" height="14" fill="#b22234"/>
-          <text x="330" y="80" font-family="monospace" font-size="11" fill="#e63946" font-weight="700">NATO?</text>
+          <rect x="37" y="60" width="28" height="14" fill="#e0a83e"/>
+          <text x="325" y="80" font-family="monospace" font-size="11" fill="#3366ff" font-weight="700">JUL 20</text>
         </svg>
       </div>
       <div class="cb">
-        <h3>Trump Threatens NATO Exit After Allies Refuse to Help Reopen Strait of Hormuz</h3>
-        <p>Trump said the US should "rethink NATO membership" as European leaders pushed back on his demands for military support in Iran.</p>
-        <div class="cf"><span>Washington Bureau</span><span>1 hr ago</span></div>
+        <h3>Parliament's Monsoon Session to Run July 20 – Aug 13, With Delimitation Bill Back on the Table</h3>
+        <p>The four-week session will see 19 sittings, with the JPC report on the 130th Constitution Amendment Bill and the Opposition's push for privilege proceedings against the Defence Minister both expected to dominate.</p>
+        <div class="cf"><span>New Delhi Bureau</span><span>3 hrs ago</span></div>
       </div>
     </article>
 
     <article class="card">
       <div class="ci"><span class="ci-badge">India</span>
-        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <rect width="400" height="200" fill="#0e1428"/>
-          <rect x="60" y="88" width="280" height="96" fill="#182240"/><rect x="80" y="72" width="240" height="20" fill="#1e2c52"/>
-          <rect x="196" y="5" width="5" height="18" fill="#888"/>
-          <rect x="201" y="5" width="20" height="5" fill="#ff9933"/><rect x="201" y="10" width="20" height="5" fill="#fff"/><rect x="201" y="15" width="20" height="5" fill="#138808"/>
-          <rect x="185" y="148" width="30" height="36" rx="3" fill="#0a101e"/>
-          <rect x="55" y="182" width="290" height="9" rx="2" fill="#1e2c52"/>
+        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="400" height="200" fill="#0e1a28"/>
+          <rect x="60" y="88" width="280" height="96" fill="#182838"/><rect x="80" y="72" width="240" height="20" fill="#1e3448"/>
+          <rect x="185" y="148" width="30" height="36" rx="3" fill="#0a1420"/>
+          <rect x="55" y="182" width="290" height="9" rx="2" fill="#1e3448"/>
+          <line x1="30" y1="10" x2="10" y2="55" stroke="#5a9bd8" stroke-width="2" opacity=".55"/>
+          <line x1="80" y1="0" x2="55" y2="50" stroke="#5a9bd8" stroke-width="2" opacity=".5"/>
+          <line x1="340" y1="5" x2="315" y2="48" stroke="#5a9bd8" stroke-width="2" opacity=".55"/>
+          <line x1="380" y1="15" x2="358" y2="60" stroke="#5a9bd8" stroke-width="2" opacity=".5"/>
+          <line x1="150" y1="0" x2="128" y2="42" stroke="#5a9bd8" stroke-width="1.6" opacity=".4"/>
+          <line x1="260" y1="0" x2="238" y2="42" stroke="#5a9bd8" stroke-width="1.6" opacity=".4"/>
+          <ellipse cx="200" cy="190" rx="180" ry="10" fill="#123048" opacity=".6"/>
+          <text x="150" y="196" font-family="monospace" font-size="8" fill="#5a9bd8" opacity=".85">RED ALERT · IMD</text>
         </svg>
       </div>
       <div class="cb">
-        <h3>Lok Sabha Rejects Opposition No-Confidence Motion Against Speaker Om Birla by Voice Vote</h3>
-        <p>Seven Congress and CPI(M) MPs were suspended for unruly behaviour. Parliament adjourned amid sloganeering from opposition benches.</p>
-        <div class="cf"><span>New Delhi Bureau</span><span>1 hr ago</span></div>
+        <h3>Mumbai Under Red Alert as Monsoon Dumps a Month's Rain in Four Days</h3>
+        <p>Waterlogging halted trains and delayed 200+ flights. The CM said nearly 300 trees came down in Monday's high winds and urged residents to stay indoors as the heavy spell continues.</p>
+        <div class="cf"><span>Mumbai Correspondent</span><span>4 hrs ago</span></div>
       </div>
     </article>
 
     <article class="card">
       <div class="ci"><span class="ci-badge">Economy</span>
-        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <rect width="400" height="200" fill="#070f08"/>
           <line x1="50" y1="25" x2="50" y2="174" stroke="#153a18" stroke-width=".9"/><line x1="50" y1="174" x2="385" y2="174" stroke="#153a18" stroke-width=".9"/>
           <rect x="341" y="24" width="14" height="26" rx="1" fill="#00cc55"/>
-          <polyline points="78,136 108,124 138,104 168,92 198,112 228,78 258,66 288,54 318,44 348,36" fill="none" stroke="#c9a84c" stroke-width="2.3"/>
+          <polyline points="78,136 108,124 138,104 168,92 198,112 228,78 258,66 288,54 318,44 348,36" fill="none" stroke="#e0a83e" stroke-width="2.3"/>
           <polygon points="354,26 372,26 363,12" fill="#00cc55"/>
-          <text x="56" y="190" font-family="monospace" font-size="8.5" fill="#00cc55" opacity=".8">BSE SENSEX 75,034  +1.08%  ▲</text>
+          <text x="56" y="190" font-family="monospace" font-size="8.5" fill="#00cc55" opacity=".8">BSE SENSEX 78,285  +0.67%  ▲</text>
         </svg>
       </div>
       <div class="cb">
-        <h3>Sensex Hits 75,000 as Markets Rally; Brent Crude Tops $102 on Hormuz Closure</h3>
-        <p>Indian equities defied global oil shock. Brent crude jumped $2.48 to $102.69 as Gulf energy exports dropped 60% due to the Iran war.</p>
-        <div class="cf"><span>Markets Desk</span><span>2 hrs ago</span></div>
+        <h3>Sensex Gains for 4th Straight Session, Closes at 78,285 as Nifty Clears 24,400</h3>
+        <p>The Nifty50 settled at 24,430, closing above its 200-day average for the first time since February — a signal technical analysts read as a strengthening medium-term trend. Auto and realty stocks led gainers.</p>
+        <div class="cf"><span>Markets Desk</span><span>Yesterday's close</span></div>
       </div>
     </article>
 
     <article class="card">
-      <div class="ci"><span class="ci-badge">Odisha</span>
-        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <rect width="400" height="200" fill="#0e0608"/><rect width="400" height="200" fill="#180c04" opacity=".9"/>
-          <rect x="100" y="80" width="200" height="110" fill="#1e1210"/>
-          <ellipse cx="270" cy="100" rx="30" ry="40" fill="#ff4400" opacity=".35"/><ellipse cx="270" cy="100" rx="18" ry="26" fill="#ff6600" opacity=".5"/>
-          <rect x="40" y="168" width="65" height="30" rx="4" fill="#cc2222"/>
-          <text x="44" y="182" font-family="monospace" font-size="6" fill="#fff" opacity=".9">AMBULANCE</text>
+      <div class="ci"><span class="ci-badge">Sports</span>
+        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <rect width="400" height="200" fill="#0a1f12"/>
+          <ellipse cx="200" cy="230" rx="260" ry="90" fill="#123420"/>
+          <circle cx="200" cy="150" r="46" fill="none" stroke="#2a5a3a" stroke-width="1.4"/>
+          <line x1="0" y1="150" x2="400" y2="150" stroke="#2a5a3a" stroke-width="1.4"/>
+          <rect x="130" y="34" width="140" height="46" rx="4" fill="#0d1a12" stroke="#2a5a3a"/>
+          <text x="148" y="52" font-family="monospace" font-size="9" fill="#5ad88a">ENG 3–2 MEX</text>
+          <text x="148" y="66" font-family="monospace" font-size="9" fill="#5ad88a">ESP 1–0 POR</text>
+          <text x="148" y="80" font-family="monospace" font-size="7.5" fill="#3a8a5a">ROUND OF 16</text>
         </svg>
       </div>
       <div class="cb">
-        <h3>10 Patients Killed, 16 Burned in ICU Fire at SCB Medical College, Cuttack — Odisha Probes</h3>
-        <p>A blaze broke out in the Intensive Care Unit of SCB Medical College Hospital. Odisha government has ordered a judicial inquiry.</p>
-        <div class="cf"><span>Cuttack Correspondent</span><span>3 hrs ago</span></div>
+        <h3>World Cup Round of 16: England Edge Mexico 3-2, Spain Nose Past Portugal, Belgium Rout USA</h3>
+        <p>England came through an "immense challenge" from Mexico in one of the tournament's best games yet. Belgium put four past the USA, while Spain edged a tense 1-0 win over Portugal.</p>
+        <div class="cf"><span>Sports Desk</span><span>Today</span></div>
       </div>
     </article>
 
     <article class="card">
-      <div class="ci"><span class="ci-badge">Elections</span>
-        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <div class="ci"><span class="ci-badge">Sports · Live</span>
+        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <rect width="400" height="200" fill="#0a0e1a"/>
-          <rect x="140" y="80" width="120" height="90" rx="6" fill="#1e2840" stroke="#2e3c5a" stroke-width="1.5"/>
-          <rect x="42" y="130" width="22" height="48" rx="2" fill="#ff9933" opacity=".9"/>
-          <rect x="80" y="110" width="22" height="68" rx="2" fill="#1a6e3a" opacity=".9"/>
-          <rect x="118" y="148" width="22" height="30" rx="2" fill="#cc2222" opacity=".9"/>
-          <text x="272" y="172" font-family="monospace" font-size="6.5" fill="#888">2026 ASSEMBLY POLLS</text>
+          <rect x="140" y="30" width="150" height="118" rx="6" fill="#141b2e" stroke="#2e3c5a" stroke-width="1.5"/>
+          <rect x="42" y="112" width="26" height="66" rx="2" fill="#6fa8ff" opacity=".92"/>
+          <rect x="80" y="150" width="26" height="28" rx="2" fill="#ff9933" opacity=".85"/>
+          <rect x="118" y="130" width="26" height="48" rx="2" fill="#3a4560" opacity=".8"/>
+          <text x="152" y="52" font-family="monospace" font-size="9" fill="#6fa8ff">ARGENTINA 72.8%</text>
+          <text x="152" y="68" font-family="monospace" font-size="9" fill="#ff9933">EGYPT 8.9%</text>
+          <text x="152" y="84" font-family="monospace" font-size="9" fill="#8a94ac">DRAW 18.3%</text>
         </svg>
       </div>
       <div class="cb">
-        <h3>WB Polls 2026: EC Announces Single-Phase Elections; BJP Releases 144-Candidate List</h3>
-        <p>The Election Commission announced West Bengal will vote in a single phase. BJP's first list targets TMC's strongholds in North Bengal.</p>
-        <div class="cf"><span>Kolkata Bureau</span><span>4 hrs ago</span></div>
+        <h3>World Cup Round of 16: Messi's Argentina Heavy Favourites Against Salah's Egypt Tonight</h3>
+        <p>Argentina are given a 72.8% win probability against an undefeated Egypt side that has taken some flak back home despite the run. Kickoff is 9:30 PM IST.</p>
+        <div class="cf"><span>Sports Desk</span><span>Live tonight</span></div>
       </div>
     </article>
 
   </div>
 </div>
+</main>
 
 <!-- FOOTER -->
 <footer>
   <div class="fi">
     <div class="fb">
       <div class="fb-row">
-        <div class="fb-circle">S52</div>
+        <div class="fb-mark">S52</div>
         <div class="fb-name">News<em>Portal</em></div>
       </div>
       <p>Independent journalism covering India and the world. Real stories, real time. Roll No: 52 · S52 Edition · Est. 1998. All news updated live from verified sources.</p>
@@ -500,54 +545,90 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
         <a href="tel:+911123456789">+91 11 2345 6789</a><br>
         <a href="mailto:newsdesk@s52portal.in">newsdesk@s52portal.in</a><br><br>
         Tips: <a href="mailto:tips@s52portal.in">tips@s52portal.in</a><br><br>
-        <a href="contact.html" style="color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em">→ Contact Page</a>
+        <a href="contact.html" style="color:var(--azure);font-family:var(--font-mono);font-size:.65rem;letter-spacing:.05em">→ Contact Page</a>
       </address>
     </div>
   </div>
   <div class="fbot">
-    <span>&copy; 2026 S52 NewsPortal Media Pvt. Ltd. All rights reserved. &nbsp;·&nbsp; <span style="color:var(--gold)">Roll No: 52</span></span>
+    <span>&copy; 2026 S52 NewsPortal Media Pvt. Ltd. All rights reserved. &nbsp;·&nbsp; <span style="color:var(--azure)">Roll No: 52</span></span>
     <span><a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a> &nbsp;·&nbsp; <a href="#">Advertise</a> &nbsp;·&nbsp; <a href="contact.html">Corrections</a></span>
   </div>
 </footer>
 
 <script>
-// Auth check
-const loggedIn = sessionStorage.getItem('s52_logged_in');
-const userName = sessionStorage.getItem('s52_user') || 'Srishti Pathak';
+/* ============================================================
+   FIREBASE CONFIG — replace with YOUR project's config values
+   (must match the config used in login.html)
+   ============================================================ */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "news-portal-website-292b8.firebaseapp.com",
+  projectId: "news-portal-website-292b8",
+  storageBucket: "news-portal-website-292b8.firebasestorage.app",
+  messagingSenderId: "19738454874",
+  appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-if(!loggedIn){
-  document.getElementById('authGuard').style.display='flex';
-  document.body.style.overflow='hidden';
-} else {
-  // Set user info
-  const initials = userName.split(' ').map(n=>n[0]).join('').toUpperCase();
-  document.getElementById('userName').textContent = userName;
-  document.getElementById('userAvatar').textContent = initials;
-  document.getElementById('topbarName').textContent = userName;
-}
+const authGuard = document.getElementById('authGuard');
+const guardMsg  = document.getElementById('guardMsg');
+const guardLink = document.getElementById('guardLink');
+
+// Firebase resolves the auth state asynchronously — show a spinner first,
+// only reveal "please log in" once we know for certain there's no session.
+auth.onAuthStateChanged((user) => {
+  if(!user){
+    guardMsg.textContent = 'Access restricted — please log in';
+    guardLink.style.display = 'inline-block';
+    authGuard.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    return;
+  }
+  authGuard.classList.remove('show');
+  document.body.style.overflow = '';
+
+  const displayName = user.displayName || user.email || 'Staff User';
+  const initials = displayName.split(/[\s@.]+/).filter(Boolean).slice(0,2).map(n => n[0]).join('').toUpperCase();
+  document.getElementById('userName').textContent = displayName;
+  document.getElementById('userAvatar').textContent = initials || 'S52';
+  document.getElementById('topbarName').textContent = displayName;
+
+  // Reveal real news cards after their skeleton placeholders
+  setTimeout(() => document.getElementById('newsGrid').classList.remove('is-loading'), 500);
+});
 
 // Nav hamburger
-document.getElementById('menuBtn').onclick = () =>
-  document.getElementById('navLinks').classList.toggle('open');
+const menuBtn = document.getElementById('menuBtn');
+menuBtn.addEventListener('click', () => {
+  const open = document.getElementById('navLinks').classList.toggle('open');
+  menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+});
 document.querySelectorAll('#navLinks a').forEach(a =>
-  a.addEventListener('click', () =>
-    document.getElementById('navLinks').classList.remove('open')));
+  a.addEventListener('click', () => {
+    document.getElementById('navLinks').classList.remove('open');
+    menuBtn.setAttribute('aria-expanded', 'false');
+  }));
 
 // Logout modal
+let lastFocused = null;
 function showLogoutModal(){
+  lastFocused = document.activeElement;
   document.getElementById('logoutModal').classList.add('show');
+  document.querySelector('.btn-cancel').focus();
 }
 function closeModal(){
   document.getElementById('logoutModal').classList.remove('show');
+  if(lastFocused) lastFocused.focus();
 }
 function confirmLogout(){
-  sessionStorage.removeItem('s52_logged_in');
-  sessionStorage.removeItem('s52_user');
-  window.location.href = 'login.html';
+  auth.signOut().then(() => { window.location.href = 'login.html'; });
 }
-// Close modal on overlay click
 document.getElementById('logoutModal').addEventListener('click', function(e){
   if(e.target === this) closeModal();
+});
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape' && document.getElementById('logoutModal').classList.contains('show')) closeModal();
 });
 </script>
 </body>
