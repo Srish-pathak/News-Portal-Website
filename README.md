@@ -150,7 +150,7 @@ News Portal
 
 <p align="center">
 
-<img src="screenshots/home.png" width="90%">
+<img width="1841" height="866" alt="image" src="https://github.com/user-attachments/assets/3c34cbc7-a2f4-45ac-a62a-cb2c399b1825" />
 
 </p>
 
@@ -160,7 +160,8 @@ News Portal
 
 <p align="center">
 
-<img src="screenshots/login.png" width="90%">
+<img width="1830" height="857" alt="image" src="https://github.com/user-attachments/assets/97b7346a-3ca9-4c4d-bb94-7d05ff037400" />
+
 
 </p>
 
@@ -170,7 +171,8 @@ News Portal
 
 <p align="center">
 
-<img src="screenshots/mobile.png" width="35%">
+<img width="232" height="671" alt="image" src="https://github.com/user-attachments/assets/91fecc02-d27d-466a-837a-ff9ec98a34e8" />
+
 
 </p>
 
