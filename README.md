@@ -30,7 +30,7 @@ A Modern Responsive News Portal with Firebase Authentication
 
 ### 🔗 Demo
 
-> [https://YOUR-LIVE-LINK.com](https://srish-pathak.github.io/News-Portal-Website/)
+> https://srish-pathak.github.io/News-Portal-Website/
 
 ---
 
