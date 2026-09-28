@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contact — S52 NewsPortal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,900;1,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--red:#e63946;--dk:#0d0d0d;--bg:#f7f3ec;--gold:#c9a84c;--muted:#7a756b;--bd:#ddd5c2}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--dk)}
+a{color:var(--dk);text-decoration:none}a:hover{color:var(--red)}
+
+nav{background:var(--dk);display:flex;align-items:center;justify-content:space-between;padding:.7rem 2rem;border-bottom:2px solid var(--red)}
+nav a{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#777;padding:.3rem .6rem}
+nav a:hover,nav a.on{color:#fff}
+.logo{font-family:'Playfair Display',serif;font-size:1rem;color:#fff;font-weight:900}
+.logo em{color:var(--red);font-style:italic}
+.logo b{background:var(--gold);color:var(--dk);padding:2px 6px;border-radius:3px;font-size:.7rem;margin-right:.4rem}
+
+h1{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;background:var(--dk);color:#fff;padding:2rem;border-bottom:3px solid var(--red)}
+h1 em{color:var(--red);font-style:italic}
+
+.wrap{max-width:900px;margin:2rem auto;padding:0 1.5rem;display:grid;grid-template-columns:1fr 240px;gap:1.5rem}
+
+form{background:#fff;border:1px solid var(--bd);padding:1.8rem}
+label{display:block;font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;margin:.9rem 0 .3rem}
+input,select,textarea{width:100%;padding:.6rem .8rem;border:1px solid var(--bd);background:var(--bg);font-size:.83rem;outline:none;resize:none}
+input:focus,select:focus,textarea:focus{border-color:var(--dk)}
+button{width:100%;margin-top:1rem;padding:.85rem;background:var(--dk);color:#fff;border:none;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+button:hover{background:var(--red)}
+
+.info{background:#fff;border:1px solid var(--bd);padding:1.4rem;font-size:.82rem;line-height:2}
+.info h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:900;border-bottom:1px solid var(--bd);padding-bottom:.6rem;margin-bottom:.8rem}
+.info a{color:var(--red)}
+
+#ok{display:none;background:#f1f8e9;border:1px solid #c8e6c9;padding:1.5rem;text-align:center;margin-bottom:1rem}
+#ok h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900}
+#ok p{font-size:.78rem;color:var(--muted);margin-top:.3rem}
+
+footer{text-align:center;padding:1.2rem;font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);border-top:1px solid var(--bd);margin-top:2rem}
+
+@media(max-width:600px){.wrap{grid-template-columns:1fr}h1{font-size:1.6rem;padding:1.5rem}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><b>S52</b>News<em>Portal</em></div>
+  <div>
+    <a href="index.html">Home</a>
+    <a href="#">Politics</a>
+    <a href="#">Sports</a>
+    <a href="#">Technology</a>
+    <a href="contact.html" class="on">Contact</a>
+  </div>
+</nav>
+
+<h1>Contact &amp; <em>Feedback</em></h1>
+
+<div class="wrap">
+  <form id="f">
+    <div id="ok"><h3>✓ Message Received!</h3><p id="ref"></p></div>
+    <label>Name *</label><input type="text" required placeholder="Your name">
+    <label>Email *</label><input type="email" required placeholder="you@example.com">
+    <label>Subject</label>
+    <select>
+      <option>General Feedback</option>
+      <option>Article Correction</option>
+      <option>News Tip</option>
+      <option>Advertising</option>
+      <option>Other</option>
+    </select>
+    <label>Message *</label>
+    <textarea rows="5" required placeholder="Write your message..."></textarea>
+    <button type="submit">Send Message →</button>
+  </form>
+
+  <div class="info">
+    <h3>Get in Touch</h3>
+    📍 14 Press House Lane<br>New Delhi — 110001<br><br>
+    📞 <a href="tel:+911123456789">+91 11 2345 6789</a><br>
+    ✉️ <a href="mailto:newsdesk@s52portal.in">newsdesk@s52portal.in</a><br>
+    📰 <a href="mailto:tips@s52portal.in">tips@s52portal.in</a><br><br>
+    <strong>Newsroom:</strong> 6AM–11PM<br>
+    <strong>Breaking desk:</strong> 24×7
+  </div>
+</div>
+
+<footer>© 2026 S52 NewsPortal · Roll No: 52 · Est. 1998</footer>
+
+<script>
+document.getElementById('f').onsubmit=function(e){
+  e.preventDefault();
+  document.getElementById('ref').textContent='Ref: S52-'+Date.now().toString(36).toUpperCase().slice(-6);
+  document.getElementById('ok').style.display='block';
+  this.reset();
+};
+</script>
+</body>
+</html>
