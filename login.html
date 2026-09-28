@@ -3,305 +3,160 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sign In — S52 NewsPortal</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-<!-- Firebase (compat SDK — no build tooling required) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
+<title>Login — S52 NewsPortal</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --navy:#0f1521; --navy-2:#161d2e;
-  --azure:#3366ff; --azure-dark:#2350d6; --azure-light:#eaf0ff;
-  --coral:#ff5a5f;
-  --bg:#f4f6fb; --surface:#ffffff;
-  --ink:#12172a; --muted:#6b7385; --faint:#9aa2b4;
-  --border:#e4e8f1;
-  --radius:16px; --radius-sm:10px;
-  --shadow-sm:0 1px 2px rgba(15,21,33,.05), 0 1px 3px rgba(15,21,33,.06);
-  --shadow-md:0 8px 24px rgba(15,21,33,.08);
-  --shadow-lg:0 24px 64px rgba(15,21,33,.16);
-  --font-display:'Space Grotesk',sans-serif;
-  --font-body:'Inter',sans-serif;
-  --font-mono:'IBM Plex Mono',monospace;
-}
-html{scroll-behavior:smooth}
-body{font-family:var(--font-body);background:var(--bg);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--red:#e63946;--dk:#0d0d0d;--bg:#f7f3ec;--cream:#ede7d8;--gold:#c9a84c;--muted:#7a756b;--bd:#ddd5c2;--w:#fff}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dk);min-height:100vh;display:flex;flex-direction:column}
 a{text-decoration:none;color:inherit}
-button{font-family:inherit}
-:focus-visible{outline:2.5px solid var(--azure);outline-offset:2px;border-radius:4px}
-.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
 
 /* TOPBAR */
-.topbar{background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:.45rem 2rem;font-family:var(--font-mono);font-size:.68rem;color:#8b93a7}
-.live-dot{position:relative;display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--coral);margin-right:.5rem;vertical-align:middle}
-.live-dot::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1.5px solid var(--coral);animation:ping 1.6s ease-out infinite}
-@keyframes ping{0%{transform:scale(.6);opacity:.9}100%{transform:scale(1.8);opacity:0}}
+.topbar{background:var(--dk);display:flex;align-items:center;justify-content:space-between;padding:5px 2rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;overflow:hidden}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);animation:blink 1.2s ease-in-out infinite;margin-right:.4rem;vertical-align:middle}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
 
 /* HEADER */
-header{background:var(--surface);border-bottom:1px solid var(--border);padding:1.1rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1.5rem}
-.logo-wrap{display:flex;align-items:center;gap:.8rem}
-.logo-mark{width:44px;height:44px;border-radius:12px;background:linear-gradient(155deg,var(--azure),var(--azure-dark));display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
-.logo-mark span{font-family:var(--font-display);font-size:.85rem;font-weight:700;color:#fff;letter-spacing:-.02em}
-.site-title{font-family:var(--font-display);font-size:1.35rem;font-weight:700;letter-spacing:-.02em}
-.site-title em{color:var(--azure);font-style:normal}
-.site-sub{font-family:var(--font-mono);font-size:.6rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:.15rem}
-.back-pill{display:inline-flex;align-items:center;gap:.4rem;font-family:var(--font-mono);font-size:.65rem;color:var(--muted);border:1px solid var(--border);padding:.5rem 1rem;border-radius:999px;transition:all .18s}
-.back-pill:hover{color:var(--azure);border-color:var(--azure)}
+header{background:var(--cream);border-bottom:1px solid var(--bd);padding:1.2rem 2rem .9rem;display:flex;align-items:center;justify-content:space-between;gap:2rem}
+.logo-wrap{display:flex;align-items:center;gap:.9rem}
+.logo-circle{width:52px;height:52px;border-radius:50%;background:var(--dk);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px var(--gold),0 0 0 5px var(--dk),0 0 0 7px var(--gold)}
+.logo-circle span{font-family:'Playfair Display',serif;font-size:1rem;font-weight:900;color:var(--w)}
+.logo-circle span b{color:var(--gold)}
+.site-title{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,3vw,2.4rem);font-weight:900;letter-spacing:-.02em}
+.site-title em{color:var(--red);font-style:italic}
+.site-sub{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-top:.2rem}
 
-/* MAIN */
-.login-area{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 1.25rem}
-.login-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);width:100%;max-width:430px;overflow:hidden;box-shadow:var(--shadow-lg);animation:rise .5s cubic-bezier(.2,.8,.2,1)}
-@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@media (prefers-reduced-motion:reduce){.login-card{animation:none}.live-dot::after{animation:none}}
+/* MAIN LOGIN AREA */
+.login-area{flex:1;display:flex;align-items:center;justify-content:center;padding:3rem 1.5rem}
+.login-card{background:var(--w);border:1px solid var(--bd);width:100%;max-width:420px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.08)}
 
-.card-header{background:linear-gradient(155deg,var(--navy),var(--navy-2));padding:2.2rem 2rem 1.6rem;text-align:center}
-.card-icon{width:56px;height:56px;border-radius:16px;background:rgba(51,102,255,.16);border:1px solid rgba(51,102,255,.35);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
-.card-header h1{font-family:var(--font-display);font-size:1.35rem;font-weight:700;color:#fff;margin-bottom:.3rem}
-.card-header p{font-family:var(--font-mono);font-size:.6rem;color:#8b93a7;letter-spacing:.1em;text-transform:uppercase}
+.card-header{background:var(--dk);padding:2rem 2rem 1.5rem;text-align:center;position:relative}
+.card-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--red)}
+.card-icon{width:52px;height:52px;border-radius:50%;background:rgba(201,168,76,.15);border:1.5px solid rgba(201,168,76,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--gold)}
+.card-header h1{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--w);margin-bottom:.3rem}
+.card-header p{font-family:'JetBrains Mono',monospace;font-size:.57rem;color:#555;letter-spacing:.12em;text-transform:uppercase}
 
 .card-body{padding:2rem}
 
-.field{margin-bottom:1.25rem}
-.field label{display:block;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
-.input-wrap{position:relative}
-.field input{width:100%;padding:.8rem 1rem;border:1.5px solid var(--border);background:var(--bg);font-family:var(--font-body);font-size:.92rem;color:var(--ink);outline:none;transition:border-color .18s,background .18s;border-radius:var(--radius-sm)}
-.field input:focus{border-color:var(--azure);background:var(--surface)}
-.field input::placeholder{color:var(--faint)}
-.field input[aria-invalid="true"]{border-color:var(--coral);background:#fff6f6}
-.field-error{font-family:var(--font-mono);font-size:.62rem;color:var(--coral);margin-top:.4rem;display:none;align-items:center;gap:.35rem}
-.field-error.show{display:flex}
+.field{margin-bottom:1.3rem}
+.field label{display:block;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.field input{width:100%;padding:.75rem 1rem;border:1.5px solid var(--bd);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--dk);outline:none;transition:border-color .2s,background .2s;border-radius:0}
+.field input:focus{border-color:var(--gold);background:var(--w)}
+.field input::placeholder{color:#bbb}
 
-.pw-toggle{position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);padding:.2rem;display:flex}
-.pw-toggle:hover{color:var(--azure)}
+.hint{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);margin-top:.4rem;display:flex;align-items:center;gap:.3rem}
+.hint::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0}
 
-.hint{font-family:var(--font-mono);font-size:.58rem;color:var(--muted);margin-top:.4rem;display:flex;align-items:center;gap:.35rem}
-.hint::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--azure);flex-shrink:0}
-
-.row-between{display:flex;justify-content:flex-end;margin:-.5rem 0 1.1rem}
-.link-btn{background:none;border:none;cursor:pointer;font-family:var(--font-mono);font-size:.64rem;color:var(--azure);letter-spacing:.02em;padding:.2rem}
-.link-btn:hover{text-decoration:underline}
-
-.login-btn{width:100%;padding:.9rem;background:var(--azure);color:#fff;border:none;border-radius:var(--radius-sm);font-family:var(--font-display);font-size:.85rem;font-weight:600;cursor:pointer;transition:background .18s,transform .12s;display:flex;align-items:center;justify-content:center;gap:.6rem}
-.login-btn:hover{background:var(--azure-dark)}
+.login-btn{width:100%;padding:.85rem;background:var(--red);color:var(--w);border:none;font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:background .2s,transform .15s;margin-top:.5rem;position:relative;overflow:hidden}
+.login-btn:hover{background:#c42c38}
 .login-btn:active{transform:scale(.99)}
-.login-btn:disabled{background:#9db3f5;cursor:not-allowed}
-.spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite;display:none}
-.login-btn.loading .spinner{display:inline-block}
-.login-btn.loading .btn-label{opacity:.85}
-@keyframes spin{to{transform:rotate(360deg)}}
+.login-btn::after{content:'→';position:absolute;right:1.2rem;top:50%;transform:translateY(-50%);font-size:.9rem;transition:right .2s}
+.login-btn:hover::after{right:.9rem}
 
-.status-box{border-radius:var(--radius-sm);padding:.8rem 1rem;margin-bottom:1.2rem;display:none;align-items:flex-start;gap:.65rem;font-size:.82rem;line-height:1.5;animation:slidein .2s ease}
-.status-box.show{display:flex}
-.status-box.err{background:#fff2f2;border:1px solid #ffd3d4;color:#b3232a}
-.status-box.ok{background:#eefaf1;border:1px solid #bfe9cb;color:#1c7a3c}
-.status-box svg{flex-shrink:0;margin-top:.1rem}
-@keyframes slidein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.error-box{background:#fff5f5;border:1.5px solid #fcc;padding:.75rem 1rem;margin-bottom:1.2rem;display:none;align-items:center;gap:.6rem}
+.error-box.show{display:flex}
+.error-box svg{flex-shrink:0}
+.error-box span{font-size:.78rem;color:#c0392b;font-family:'DM Sans',sans-serif}
 
-.card-footer{border-top:1px solid var(--border);padding:1.1rem 2rem;display:flex;justify-content:space-between;align-items:center;background:#fbfcfe}
-.card-footer span{font-family:var(--font-mono);font-size:.58rem;color:var(--muted)}
-.card-footer a{font-family:var(--font-mono);font-size:.62rem;color:var(--azure);letter-spacing:.05em}
-.card-footer a:hover{text-decoration:underline}
+.card-footer{border-top:1px solid var(--bd);padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center}
+.card-footer span{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted)}
+.back-link{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--red);letter-spacing:.1em;text-transform:uppercase;transition:color .2s}
+.back-link:hover{color:#c42c38}
 
-footer.site-footer{background:var(--navy);padding:1.1rem 2rem;text-align:center;font-family:var(--font-mono);font-size:.6rem;color:#5b6274}
-footer.site-footer span{color:var(--azure)}
+/* FOOTER */
+footer{background:var(--dk);padding:1rem 2rem;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.55rem;color:#333}
+footer span{color:var(--gold)}
 
+/* Responsive */
 @media(max-width:580px){
-  header{padding:.9rem 1rem}
-  .login-area{padding:1.5rem .7rem}
-  .card-body{padding:1.6rem}
+  header{padding:.8rem 1rem}
+  .login-area{padding:1.5rem .8rem}
+  .card-body{padding:1.5rem}
 }
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <span><span class="live-dot"></span>Secure Access Portal</span>
-  <span>S52 NewsPortal</span>
+  <span><span class="live-dot"></span><span style="color:var(--red);font-weight:600">LIVE</span>&nbsp;&nbsp;Wed, 18 Mar 2026</span>
+  <span style="color:#444">Secure Login &nbsp;·&nbsp; S52 NewsPortal</span>
+  <span style="color:#444">Ranchi 28°C ☁</span>
 </div>
 
 <header>
   <div class="logo-wrap">
-    <div class="logo-mark"><span>S52</span></div>
+    <div class="logo-circle"><span>S<b>52</b></span></div>
     <div>
       <div class="site-title">News<em>Portal</em></div>
       <div class="site-sub">Truth · Speed · Depth</div>
     </div>
   </div>
-  <a href="index.html" class="back-pill">← Back to Portal</a>
+  <a href="index.html" style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--bd);padding:.4rem .9rem;transition:color .2s,border-color .2s" onmouseover="this.style.color='var(--red)';this.style.borderColor='var(--red)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--bd)'">← Back to Portal</a>
 </header>
 
 <div class="login-area">
   <div class="login-card">
     <div class="card-header">
-      <div class="card-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2l8 4v6c0 5-3.4 8.6-8 10-4.6-1.4-8-5-8-10V6l8-4z" stroke="#6f93ff" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#6f93ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <h1>Staff Sign In</h1>
-      <p>Authenticated · Firebase Secured</p>
+      <div class="card-icon">S52</div>
+      <h1>Staff Login</h1>
+      <p>S52 NewsPortal · Secure Access</p>
     </div>
-
-    <form class="card-body" id="loginForm" novalidate>
-      <div class="status-box" id="statusBox" role="alert" aria-live="assertive">
-        <svg id="statusIcon" width="16" height="16" viewBox="0 0 16 16" fill="none"></svg>
-        <span id="statusMsg"></span>
+    <div class="card-body">
+      <div class="error-box" id="errBox">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="7.5" stroke="#c0392b" stroke-width="1"/>
+          <line x1="8" y1="4.5" x2="8" y2="8.5" stroke="#c0392b" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="8" cy="10.5" r=".8" fill="#c0392b"/>
+        </svg>
+        <span id="errMsg">Invalid credentials. Please try again.</span>
       </div>
 
       <div class="field">
-        <label for="emailInput">Email address</label>
-        <input type="email" id="emailInput" placeholder="you@s52portal.in" autocomplete="email" aria-describedby="emailHint" required/>
-        <div class="field-error" id="emailError">Enter a valid email address.</div>
-        <p class="hint" id="emailHint">Use your registered staff email</p>
+        <label>Full Name</label>
+        <input type="text" id="nameInput" placeholder="Enter your full name" autocomplete="name"/>
+        <p class="hint">Use your registered name</p>
       </div>
-
       <div class="field">
-        <label for="pwInput">Password</label>
-        <div class="input-wrap">
-          <input type="password" id="pwInput" placeholder="Enter your password" autocomplete="current-password" required/>
-          <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" id="eyeIcon"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
-          </button>
-        </div>
-        <div class="field-error" id="pwError">Password is required.</div>
+        <label>Roll Number</label>
+        <input type="text" id="rollInput" placeholder="Enter your roll number" autocomplete="off"/>
+        <p class="hint">As per student records</p>
       </div>
-
-      <div class="row-between">
-        <button type="button" class="link-btn" id="forgotBtn">Forgot password?</button>
-      </div>
-
-      <button class="login-btn" type="submit" id="loginBtn">
-        <span class="spinner" aria-hidden="true"></span>
-        <span class="btn-label">Sign In →</span>
-      </button>
-    </form>
-
+      <button class="login-btn" onclick="doLogin()">Access Portal</button>
+    </div>
     <div class="card-footer">
       <span>S52 Edition · Roll No: 52</span>
-      <a href="index.html">← Home</a>
+      <a href="index.html" class="back-link">← Home</a>
     </div>
   </div>
 </div>
 
-<footer class="site-footer">&copy; 2026 <span>S52 NewsPortal</span> Media Pvt. Ltd. · Est. 1998</footer>
+<footer>&copy; 2026 <span>S52 NewsPortal</span> Media Pvt. Ltd. · Est. 1998</footer>
 
 <script>
-/* ============================================================
-   FIREBASE CONFIG — replace with YOUR project's config values
-   (Firebase console → Project settings → General → Your apps)
-   ============================================================ */
-const firebaseConfig = {
-  apiKey: "AIzaSyBX0X_R3SuFptw3eqJnvyzyyDuR05tzJTI",
-  authDomain: "news-portal-website-292b8.firebaseapp.com",
-  projectId: "news-portal-website-292b8",
-  storageBucket: "news-portal-website-292b8.firebasestorage.app",
-  messagingSenderId: "19738454874",
-  appId: "1:19738454874:web:dba5a4cf09f552559be163"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-
-const form        = document.getElementById('loginForm');
-const emailInput  = document.getElementById('emailInput');
-const pwInput     = document.getElementById('pwInput');
-const emailError  = document.getElementById('emailError');
-const pwError     = document.getElementById('pwError');
-const loginBtn    = document.getElementById('loginBtn');
-const statusBox   = document.getElementById('statusBox');
-const statusMsg   = document.getElementById('statusMsg');
-const statusIcon  = document.getElementById('statusIcon');
-const forgotBtn   = document.getElementById('forgotBtn');
-const pwToggle    = document.getElementById('pwToggle');
-
-const ICONS = {
-  err: '<circle cx="8" cy="8" r="7.5" stroke="#b3232a" stroke-width="1"/><line x1="8" y1="4.5" x2="8" y2="8.5" stroke="#b3232a" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="10.5" r=".8" fill="#b3232a"/>',
-  ok:  '<circle cx="8" cy="8" r="7.5" stroke="#1c7a3c" stroke-width="1"/><path d="M4.5 8.2l2.4 2.4 4.6-5.2" stroke="#1c7a3c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'
-};
-
-function showStatus(kind, msg){
-  statusBox.className = 'status-box show ' + kind;
-  statusIcon.innerHTML = ICONS[kind];
-  statusMsg.textContent = msg;
-}
-function hideStatus(){ statusBox.className = 'status-box'; }
-
-function setFieldError(input, errEl, show, msg){
-  input.setAttribute('aria-invalid', show ? 'true' : 'false');
-  errEl.classList.toggle('show', show);
-  if(msg) errEl.textContent = msg;
-}
-
-function isValidEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
-
-function friendlyAuthError(code){
-  switch(code){
-    case 'auth/invalid-email': return 'That email address doesn\'t look right.';
-    case 'auth/user-not-found':
-    case 'auth/invalid-credential': return 'No account matches those credentials.';
-    case 'auth/wrong-password': return 'Incorrect password. Please try again.';
-    case 'auth/too-many-requests': return 'Too many attempts. Please wait and try again.';
-    case 'auth/network-request-failed': return 'Network error — check your connection.';
-    default: return 'Sign-in failed. Please check your details and try again.';
+function doLogin(){
+  const name = document.getElementById('nameInput').value.trim().toLowerCase();
+  const roll = document.getElementById('rollInput').value.trim();
+  const errBox = document.getElementById('errBox');
+  const errMsg = document.getElementById('errMsg');
+  const validName = 'srishti pathak';
+  const validRoll = '23190503052';
+  if(name === validName && roll === validRoll){
+    errBox.classList.remove('show');
+    sessionStorage.setItem('s52_logged_in','1');
+    sessionStorage.setItem('s52_user','Srishti Pathak');
+    window.location.href = 'index.html';
+  } else {
+    errBox.classList.add('show');
+    if(name !== validName && roll !== validRoll){
+      errMsg.textContent = 'Name and Roll Number do not match our records.';
+    } else if(name !== validName){
+      errMsg.textContent = 'Name not recognised. Check spelling.';
+    } else {
+      errMsg.textContent = 'Roll Number incorrect. Please try again.';
+    }
   }
 }
-
-pwToggle.addEventListener('click', () => {
-  const showing = pwInput.type === 'text';
-  pwInput.type = showing ? 'password' : 'text';
-  pwToggle.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
-});
-
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  hideStatus();
-  const email = emailInput.value.trim();
-  const pw = pwInput.value;
-
-  const emailOk = isValidEmail(email);
-  const pwOk = pw.length > 0;
-  setFieldError(emailInput, emailError, !emailOk);
-  setFieldError(pwInput, pwError, !pwOk);
-  if(!emailOk || !pwOk){
-    if(!emailOk) emailInput.focus(); else pwInput.focus();
-    return;
-  }
-
-  loginBtn.classList.add('loading');
-  loginBtn.disabled = true;
-  loginBtn.querySelector('.btn-label').textContent = 'Signing in…';
-
-  auth.signInWithEmailAndPassword(email, pw)
-    .then(() => {
-      showStatus('ok', 'Signed in — redirecting…');
-      setTimeout(() => { window.location.href = 'index.html'; }, 500);
-    })
-    .catch((error) => {
-      showStatus('err', friendlyAuthError(error.code));
-      loginBtn.classList.remove('loading');
-      loginBtn.disabled = false;
-      loginBtn.querySelector('.btn-label').textContent = 'Sign In →';
-    });
-});
-
-forgotBtn.addEventListener('click', () => {
-  const email = emailInput.value.trim();
-  if(!isValidEmail(email)){
-    setFieldError(emailInput, emailError, true);
-    emailInput.focus();
-    showStatus('err', 'Enter your email above first, then tap "Forgot password?"');
-    return;
-  }
-  auth.sendPasswordResetEmail(email)
-    .then(() => showStatus('ok', 'Password reset link sent to ' + email))
-    .catch((error) => showStatus('err', friendlyAuthError(error.code)));
-});
-
-// If already signed in, skip straight to the portal
-auth.onAuthStateChanged((user) => {
-  if(user) window.location.href = 'index.html';
-});
+document.addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
 </script>
 </body>
 </html>
