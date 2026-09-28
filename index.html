@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,106 +7,310 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--red:#e63946;--dk:#0d0d0d;--bg:#f7f3ec;--cream:#ede7d8;--gold:#c9a84c;--muted:#7a756b;--bd:#ddd5c2;--w:#fff;--nh:50px}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--dk)}
+
+/* ── THEME VARIABLES ── */
+:root{
+  --red:#e63946;--gold:#c9a84c;--nh:50px;
+  --dk:#0d0d0d;--bg:#f7f3ec;--cream:#ede7d8;
+  --muted:#7a756b;--bd:#ddd5c2;--w:#fff;
+  --card-bg:#fff;--txt:#0d0d0d;
+  --shadow:0 8px 48px rgba(0,0,0,.1);
+}
+[data-theme="dark"]{
+  --bg:#0e0e0e;--cream:#1a1a1a;--bd:#2a2a2a;
+  --w:#111;--card-bg:#161616;--txt:#e8e3d8;
+  --muted:#888;--dk:#f0ebe0;--shadow:0 8px 48px rgba(0,0,0,.5);
+}
+
+/* ── READING PROGRESS BAR ── */
+#progress-bar{
+  position:fixed;top:0;left:0;height:3px;width:0%;
+  background:linear-gradient(90deg,var(--red),var(--gold));
+  z-index:9999;transition:width .1s linear;
+}
+
+/* ── CUSTOM SCROLLBAR ── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--red);border-radius:3px}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);color:var(--txt);
+  transition:background .3s,color .3s;
+}
 a{text-decoration:none;color:inherit}
 
-/* TOP BAR */
-.topbar{background:var(--dk);display:flex;align-items:center;justify-content:space-between;padding:5px 2rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#555;gap:1rem;overflow:hidden}
-.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--red);animation:blink 1.2s ease-in-out infinite;margin-right:.4rem;vertical-align:middle}
+/* ── TOP BAR ── */
+.topbar{
+  background:var(--dk);display:flex;align-items:center;
+  justify-content:space-between;padding:5px 2rem;
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  color:#555;gap:1rem;overflow:hidden;
+}
+[data-theme="dark"] .topbar{background:#000}
+.live-dot{
+  display:inline-block;width:7px;height:7px;border-radius:50%;
+  background:var(--red);animation:blink 1.2s ease-in-out infinite;
+  margin-right:.4rem;vertical-align:middle;
+}
 @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
 .top-roll{flex:1;overflow:hidden}
 .top-inner{display:flex;animation:tscroll 45s linear infinite;white-space:nowrap}
 .top-inner span{padding:0 2.4rem;color:#777;border-right:1px solid #222;font-size:.57rem}
 @keyframes tscroll{to{transform:translateX(-50%)}}
 
-/* HEADER */
-header{background:var(--cream);border-bottom:1px solid var(--bd);padding:1.2rem 2rem .9rem;display:flex;align-items:center;justify-content:space-between;gap:2rem}
+/* ── LIVE CLOCK ── */
+#live-clock{
+  white-space:nowrap;color:var(--gold);
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  font-weight:600;letter-spacing:.05em;flex-shrink:0;
+}
+
+/* ── HEADER ── */
+header{
+  background:var(--cream);border-bottom:1px solid var(--bd);
+  padding:1.2rem 2rem .9rem;display:flex;align-items:center;
+  justify-content:space-between;gap:2rem;
+  transition:background .3s;
+}
 .logo-wrap{display:flex;align-items:center;gap:.9rem;flex-shrink:0}
-.logo-circle{width:58px;height:58px;border-radius:50%;background:var(--dk);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px var(--gold),0 0 0 5px var(--dk),0 0 0 7px var(--gold)}
-.logo-circle span{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:var(--w)}
+.logo-circle{
+  width:58px;height:58px;border-radius:50%;background:var(--dk);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 3px var(--gold),0 0 0 5px var(--dk),0 0 0 7px var(--gold);
+  transition:transform .4s ease;cursor:pointer;
+}
+.logo-circle:hover{transform:rotate(15deg) scale(1.08)}
+.logo-circle span{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:#fff}
 .logo-circle span b{color:var(--gold)}
-.site-title{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.5vw,2.8rem);font-weight:900;letter-spacing:-.02em}
+.site-title{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.5vw,2.8rem);font-weight:900;letter-spacing:-.02em;color:var(--txt)}
 .site-title em{color:var(--red);font-style:italic}
 .site-sub{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-top:.2rem}
-.hdr-date{text-align:right;font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--muted);line-height:1.9;flex-shrink:0}
-.hdr-date strong{color:var(--dk);display:block;font-size:.62rem}
 
-/* STICKY NAV */
-nav{position:sticky;top:0;z-index:999;background:var(--dk);height:var(--nh);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;border-bottom:2px solid var(--red)}
-.nav-logo{display:flex;align-items:center;gap:.6rem;color:var(--w);font-family:'Playfair Display',serif;font-weight:700;font-size:.95rem}
+/* ── HEADER RIGHT: SEARCH + DARK MODE + DATE ── */
+.hdr-right{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;flex-shrink:0}
+.hdr-controls{display:flex;align-items:center;gap:.7rem}
+.hdr-date{text-align:right;font-family:'JetBrains Mono',monospace;font-size:.57rem;color:var(--muted);line-height:1.9}
+.hdr-date strong{color:var(--txt);display:block;font-size:.62rem}
+
+/* SEARCH BAR */
+.search-wrap{position:relative;display:flex;align-items:center}
+.search-wrap input{
+  width:0;padding:0;border:1px solid transparent;
+  background:transparent;font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;color:var(--txt);outline:none;
+  transition:all .35s ease;border-radius:2px;
+}
+.search-wrap.open input{
+  width:180px;padding:.4rem .8rem;
+  border-color:var(--bd);background:var(--bg);
+}
+.search-btn{
+  background:none;border:1px solid var(--bd);padding:.38rem .5rem;
+  cursor:pointer;color:var(--muted);font-size:.8rem;
+  transition:all .2s;border-radius:2px;
+}
+.search-btn:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* DARK MODE TOGGLE */
+.theme-toggle{
+  background:none;border:1px solid var(--bd);
+  padding:.38rem .6rem;cursor:pointer;font-size:.8rem;
+  transition:all .25s;border-radius:2px;color:var(--txt);
+}
+.theme-toggle:hover{background:var(--dk);color:#fff;border-color:var(--dk)}
+
+/* ── WEATHER WIDGET ── */
+.weather-widget{
+  display:flex;align-items:center;gap:.5rem;
+  background:var(--cream);border:1px solid var(--bd);
+  padding:.3rem .8rem;font-family:'JetBrains Mono',monospace;
+  font-size:.58rem;color:var(--muted);border-radius:2px;
+  transition:background .3s;
+}
+.weather-widget .temp{font-size:.7rem;color:var(--txt);font-weight:600}
+.weather-icon{font-size:.9rem}
+
+/* ── STICKY NAV ── */
+nav{
+  position:sticky;top:0;z-index:999;background:var(--dk);
+  height:var(--nh);display:flex;align-items:center;
+  justify-content:space-between;padding:0 2rem;
+  border-bottom:2px solid var(--red);
+  transition:background .3s,box-shadow .3s;
+}
+nav.scrolled{box-shadow:0 4px 20px rgba(0,0,0,.4)}
+[data-theme="dark"] nav{background:#0a0a0a}
+.nav-logo{display:flex;align-items:center;gap:.6rem;color:#fff;font-family:'Playfair Display',serif;font-weight:700;font-size:.95rem}
 .nav-badge{background:var(--gold);color:var(--dk);font-family:'JetBrains Mono',monospace;font-size:.62rem;font-weight:700;padding:3px 8px;border-radius:3px}
 nav ul{display:flex;list-style:none;height:100%}
-nav ul a{display:flex;align-items:center;padding:0 1rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:#888;height:100%;position:relative;transition:color .2s}
-nav ul a::after{content:'';position:absolute;bottom:0;left:1rem;right:1rem;height:2px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .25s}
-nav ul a:hover,nav ul a.on{color:var(--w)}
+nav ul a{
+  display:flex;align-items:center;padding:0 1rem;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;
+  letter-spacing:.1em;text-transform:uppercase;color:#888;
+  height:100%;position:relative;transition:color .2s;
+}
+nav ul a::after{
+  content:'';position:absolute;bottom:0;left:1rem;right:1rem;
+  height:2px;background:var(--red);transform:scaleX(0);
+  transform-origin:left;transition:transform .25s;
+}
+nav ul a:hover,nav ul a.on{color:#fff}
 nav ul a:hover::after,nav ul a.on::after{transform:scaleX(1)}
 .hbg{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer}
-.hbg span{width:22px;height:2px;background:var(--w);display:block}
+.hbg span{width:22px;height:2px;background:#fff;display:block;transition:all .3s}
+.hbg.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hbg.open span:nth-child(2){opacity:0}
+.hbg.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
 
-/* BREAKING TICKER */
+/* ── TICKER ── */
 .ticker{background:var(--red);height:34px;display:flex;align-items:center;overflow:hidden}
-.tick-lbl{background:#b02030;color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;letter-spacing:.16em;padding:0 1rem;height:100%;display:flex;align-items:center;white-space:nowrap;flex-shrink:0;gap:.4rem}
+.tick-lbl{
+  background:#b02030;color:#fff;font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;font-weight:700;letter-spacing:.16em;padding:0 1rem;
+  height:100%;display:flex;align-items:center;white-space:nowrap;flex-shrink:0;gap:.4rem;
+}
 .tick-track{display:flex;animation:tick 35s linear infinite;white-space:nowrap}
-.tick-track span{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--w);padding:0 2.2rem;border-right:1px solid rgba(255,255,255,.22);letter-spacing:.04em}
+.tick-track span{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#fff;padding:0 2.2rem;border-right:1px solid rgba(255,255,255,.22);letter-spacing:.04em}
 @keyframes tick{to{transform:translateX(-50%)}}
 
-/* HERO */
-.hero-wrap{max-width:1160px;margin:2rem auto;padding:0 1.5rem}
-.hero{display:grid;grid-template-columns:1fr 295px;border:1px solid var(--bd);box-shadow:0 8px 48px rgba(0,0,0,.1);background:var(--w);overflow:hidden}
+/* ── HERO ── */
+.hero-wrap{max-width:1160px;margin:2rem auto;padding:0 1.5rem;animation:fadeUp .6s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.hero{
+  display:grid;grid-template-columns:1fr 295px;
+  border:1px solid var(--bd);box-shadow:var(--shadow);
+  background:var(--card-bg);overflow:hidden;
+  transition:background .3s;
+}
 .hero-main{position:relative;min-height:440px;overflow:hidden;cursor:pointer}
 .hero-main svg{position:absolute;inset:0;width:100%;height:100%;transition:transform .7s ease}
 .hero-main:hover svg{transform:scale(1.04)}
 .hero-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,4,2,.97) 0%,rgba(8,4,2,.35) 55%,transparent 100%)}
 .hero-content{position:absolute;bottom:0;left:0;right:0;padding:2rem 2.2rem}
-.h-tag{display:inline-block;background:var(--red);color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;padding:3px 10px;margin-bottom:.65rem}
-.hero-content h1{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,2.4vw,2.1rem);font-weight:900;color:var(--w);line-height:1.18;margin-bottom:.6rem}
+.h-tag{
+  display:inline-block;background:var(--red);color:#fff;
+  font-family:'JetBrains Mono',monospace;font-size:.56rem;
+  letter-spacing:.18em;text-transform:uppercase;padding:3px 10px;margin-bottom:.65rem;
+}
+.hero-content h1{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,2.4vw,2.1rem);font-weight:900;color:#fff;line-height:1.18;margin-bottom:.6rem}
 .hero-content p{font-size:.83rem;color:rgba(255,255,255,.68);line-height:1.65;max-width:500px}
 .hero-meta{font-family:'JetBrains Mono',monospace;font-size:.56rem;color:rgba(255,255,255,.38);display:block;margin-top:.6rem;letter-spacing:.06em}
-.live-chip{display:inline-flex;align-items:center;gap:.3rem;background:var(--red);color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.5rem;padding:2px 6px;border-radius:2px;letter-spacing:.08em;vertical-align:middle}
+.live-chip{display:inline-flex;align-items:center;gap:.3rem;background:var(--red);color:#fff;font-family:'JetBrains Mono',monospace;font-size:.5rem;padding:2px 6px;border-radius:2px;letter-spacing:.08em;vertical-align:middle}
 
 /* HERO SIDEBAR */
 .hero-side{display:flex;flex-direction:column;border-left:1px solid var(--bd)}
-.ss{padding:1rem 1.1rem;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .2s;position:relative;overflow:hidden}
+.ss{
+  padding:1rem 1.1rem;border-bottom:1px solid var(--bd);cursor:pointer;
+  transition:background .2s,transform .2s;position:relative;overflow:hidden;
+}
 .ss::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent;transition:.2s}
-.ss:hover{background:#fdf8f0}
+.ss:hover{background:var(--cream);transform:translateX(4px)}
 .ss:hover::before{background:var(--red)}
 .ss:last-child{border-bottom:none}
 .ss-cat{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.13em;color:var(--red);text-transform:uppercase;font-weight:600;margin-bottom:.2rem}
-.ss h3{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:700;line-height:1.3;color:var(--dk)}
+.ss h3{font-family:'Playfair Display',serif;font-size:.88rem;font-weight:700;line-height:1.3;color:var(--txt)}
 .ss small{font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--muted);display:block;margin-top:.25rem}
 
-/* SECTION HEADER */
+/* ── SECTION HEADER ── */
 .sec-wrap{max-width:1160px;margin:0 auto;padding:0 1.5rem}
 .sec-head{display:flex;align-items:center;gap:.8rem;margin:2.5rem 0 1.2rem}
 .sec-head::before{content:'';width:4px;height:24px;background:var(--red);border-radius:2px;flex-shrink:0}
-.sec-head h2{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;white-space:nowrap}
+.sec-head h2{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;white-space:nowrap;color:var(--txt)}
 .sec-head::after{content:'';flex:1;height:1px;background:var(--bd)}
 
-/* CARDS */
+/* ── CARDS ── */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:1.3rem;margin-bottom:3rem}
-.card{background:var(--w);border:1px solid var(--bd);overflow:hidden;cursor:pointer;transition:transform .25s,box-shadow .28s;position:relative}
-.card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--red);transform:scaleX(0);transition:transform .3s;transform-origin:left}
-.card:hover{transform:translateY(-6px);box-shadow:0 18px 48px rgba(0,0,0,.12)}
+.card{
+  background:var(--card-bg);border:1px solid var(--bd);overflow:hidden;
+  cursor:pointer;transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;
+  position:relative;animation:fadeUp .5s ease both;
+}
+.card:nth-child(1){animation-delay:.05s}
+.card:nth-child(2){animation-delay:.1s}
+.card:nth-child(3){animation-delay:.15s}
+.card:nth-child(4){animation-delay:.2s}
+.card:nth-child(5){animation-delay:.25s}
+.card:nth-child(6){animation-delay:.3s}
+.card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--red),var(--gold));
+  transform:scaleX(0);transition:transform .3s;transform-origin:left;
+}
+.card:hover{transform:translateY(-8px) scale(1.01);box-shadow:0 20px 56px rgba(0,0,0,.15)}
 .card:hover::after{transform:scaleX(1)}
 .ci{position:relative;height:175px;overflow:hidden}
 .ci svg{width:100%;height:100%;display:block;transition:transform .5s ease}
 .card:hover .ci svg{transform:scale(1.09)}
-.ci-badge{position:absolute;top:10px;left:10px;background:var(--red);color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.54rem;letter-spacing:.13em;text-transform:uppercase;padding:3px 9px;z-index:2}
-.ci::after{content:'Read Story →';position:absolute;inset:0;background:rgba(13,10,6,.83);color:var(--w);font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;z-index:3}
+.ci-badge{
+  position:absolute;top:10px;left:10px;background:var(--red);color:#fff;
+  font-family:'JetBrains Mono',monospace;font-size:.54rem;letter-spacing:.13em;
+  text-transform:uppercase;padding:3px 9px;z-index:2;
+}
+.ci::after{
+  content:'Read Story →';position:absolute;inset:0;
+  background:rgba(13,10,6,.83);color:#fff;font-family:'JetBrains Mono',monospace;
+  font-size:.68rem;letter-spacing:.1em;display:flex;align-items:center;
+  justify-content:center;opacity:0;transition:opacity .3s;z-index:3;
+}
 .card:hover .ci::after{opacity:1}
 .cb{padding:.9rem 1rem 1rem}
-.cb h3{font-family:'Playfair Display',serif;font-size:.93rem;font-weight:700;line-height:1.3;transition:color .22s}
+.cb h3{font-family:'Playfair Display',serif;font-size:.93rem;font-weight:700;line-height:1.3;transition:color .22s;color:var(--txt)}
 .card:hover .cb h3{color:var(--red)}
 .cb p{font-size:.76rem;color:var(--muted);line-height:1.55;margin-top:.3rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .cf{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:.54rem;color:var(--muted);margin-top:.6rem;padding-top:.55rem;border-top:1px solid var(--bd)}
 
-/* FOOTER */
-footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
+/* ── POLL WIDGET ── */
+.poll-section{max-width:1160px;margin:0 auto;padding:0 1.5rem 2rem}
+.poll-card{
+  background:var(--card-bg);border:1px solid var(--bd);
+  padding:1.8rem 2rem;border-left:4px solid var(--gold);
+  display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;
+}
+.poll-card h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;margin-bottom:.3rem;color:var(--txt)}
+.poll-tag{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem}
+.poll-q{font-size:.88rem;color:var(--txt);line-height:1.6;margin-bottom:1rem}
+.poll-opt{display:flex;flex-direction:column;gap:.6rem}
+.poll-btn{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.65rem 1rem;border:1px solid var(--bd);background:var(--bg);
+  cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.62rem;
+  letter-spacing:.06em;color:var(--txt);transition:all .25s;text-align:left;
+  position:relative;overflow:hidden;
+}
+.poll-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0%;background:var(--red);opacity:.12;transition:width .4s ease}
+.poll-btn:hover{border-color:var(--red);color:var(--red)}
+.poll-btn.voted::before{background:var(--red)}
+.poll-bar{height:3px;background:var(--bd);margin-top:.3rem;border-radius:2px;overflow:hidden}
+.poll-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--gold));width:0%;transition:width 1s ease;border-radius:2px}
+.poll-pct{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);margin-top:.2rem}
+.poll-note{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);margin-top:1rem}
+/* poll right: stats */
+.poll-stats{display:flex;flex-direction:column;gap:1rem}
+.stat-box{text-align:center;border:1px solid var(--bd);padding:1rem}
+.stat-num{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--red)}
+.stat-lbl{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:.2rem}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+
+/* ── BACK TO TOP ── */
+#back-top{
+  position:fixed;bottom:2rem;right:2rem;width:44px;height:44px;
+  background:var(--red);color:#fff;border:none;cursor:pointer;
+  font-size:1rem;display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:translateY(20px);transition:all .3s;z-index:888;
+  box-shadow:0 4px 16px rgba(230,57,70,.4);
+}
+#back-top.visible{opacity:1;transform:translateY(0)}
+#back-top:hover{background:var(--dk);transform:translateY(-3px)}
+
+/* ── FOOTER ── */
+footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem;transition:background .3s}
+[data-theme="dark"] footer{background:#000}
 .fi{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid #1c1c1c}
 .fb-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.65rem}
 .fb-circle{width:40px;height:40px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:.95rem;font-weight:900;color:var(--dk)}
-.fb-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--w)}
+.fb-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff}
 .fb-name em{color:var(--red);font-style:italic}
 .fb p{font-size:.76rem;color:#444;line-height:1.75}
 .fc h4{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;padding-bottom:.38rem;border-bottom:1px solid #1c1c1c}
@@ -116,54 +320,84 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
 .fbot{max-width:1160px;margin:.9rem auto 0;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:.55rem;color:#2d2d2d}
 .fbot a{color:#333}.fbot a:hover{color:var(--red)}
 
-/* RESPONSIVE */
+/* ── NEWSLETTER STRIP ── */
+.newsletter{
+  background:linear-gradient(135deg,var(--dk) 0%,#1a0a0a 100%);
+  border-top:3px solid var(--red);padding:2rem;text-align:center;
+}
+[data-theme="dark"] .newsletter{background:linear-gradient(135deg,#0a0a0a 0%,#1a0a0a 100%)}
+.newsletter h3{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;margin-bottom:.3rem}
+.newsletter p{font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:1rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.08em}
+.nl-form{display:flex;gap:.6rem;max-width:420px;margin:0 auto}
+.nl-form input{
+  flex:1;padding:.7rem 1rem;border:1px solid #333;background:#111;
+  color:#fff;font-family:'JetBrains Mono',monospace;font-size:.65rem;outline:none;
+}
+.nl-form input::placeholder{color:#444}
+.nl-form input:focus{border-color:var(--red)}
+.nl-form button{
+  padding:.7rem 1.2rem;background:var(--red);color:#fff;border:none;
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;
+  text-transform:uppercase;cursor:pointer;transition:background .2s;white-space:nowrap;
+}
+.nl-form button:hover{background:var(--gold);color:var(--dk)}
+.nl-success{display:none;color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em;margin-top:.6rem}
+
+/* ── RESPONSIVE ── */
 @media(max-width:900px){
-  header{flex-wrap:wrap}.hdr-date{order:3;width:100%;text-align:center}
+  header{flex-wrap:wrap}.hdr-right{order:3;width:100%;align-items:center}
   .hero{grid-template-columns:1fr}.hero-main{min-height:360px}
   .hero-side{border-left:none;border-top:1px solid var(--bd);display:grid;grid-template-columns:1fr 1fr}
   .fi{grid-template-columns:1fr 1fr}.fb{grid-column:1/-1}
+  .poll-card{grid-template-columns:1fr}
 }
 @media(max-width:580px){
   .topbar{display:none}
-  nav ul{display:none;position:absolute;top:var(--nh);left:0;right:0;background:var(--dk);flex-direction:column;height:auto;border-top:2px solid var(--red)}
+  nav ul{display:none;position:absolute;top:var(--nh);left:0;right:0;background:#0d0d0d;flex-direction:column;height:auto;border-top:2px solid var(--red)}
   nav ul.open{display:flex}
   nav ul a{padding:.82rem 1.5rem;height:auto;border-bottom:1px solid #1a1a1a}
   nav ul a::after{display:none}
   .hbg{display:flex}
   .hero-side{grid-template-columns:1fr}
-  .hero-wrap,.sec-wrap{padding:0 .8rem}
+  .hero-wrap,.sec-wrap,.poll-section{padding:0 .8rem}
   .grid{grid-template-columns:1fr}
   .fi{grid-template-columns:1fr}
   .fbot{flex-direction:column;gap:.4rem;text-align:center}
+  .nl-form{flex-direction:column}
+  .search-wrap.open input{width:130px}
 }
 </style>
 </head>
 <body>
 
-<!-- TOP BAR with current world news scroll -->
+<!-- READING PROGRESS -->
+<div id="progress-bar"></div>
+
+<!-- BACK TO TOP -->
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- TOP BAR -->
 <div class="topbar">
-  <span style="white-space:nowrap;flex-shrink:0"><span class="live-dot"></span><span style="color:var(--red);font-weight:600">LIVE</span>&nbsp;&nbsp;Wed, 18 Mar 2026</span>
-  <div class="top-roll">
-    <div class="top-inner">
-      <span>🔴 US-Israel strikes on Iran enter Day 19 — Strait of Hormuz remains closed, oil above $102/barrel</span>
-      <span>🇮🇳 India evacuates 550+ citizens from Iran; Jaishankar thanks Armenia for safe transit</span>
-      <span>💥 Israel says it killed Iran security chief Ali Larijani &amp; Basij commander Soleimani in overnight strikes</span>
-      <span>🏛️ Lok Sabha rejects Opposition no-confidence motion against Speaker Om Birla</span>
-      <span>🔥 10 killed in ICU fire at SCB Medical College, Cuttack — Odisha orders judicial probe</span>
-      <span>📈 Sensex crosses 75,000 — Indian markets at record high amid global volatility</span>
-      <span>✈️ Dubai International Airport resumes flights after drone strike disruption</span>
-      <span>🚀 ISRO completes CE20 cryogenic engine ground test for LVM3 heavy-lift rocket</span>
-      <span>🔴 US-Israel strikes on Iran enter Day 19 — Strait of Hormuz remains closed, oil above $102/barrel</span>
-      <span>🇮🇳 India evacuates 550+ citizens from Iran; Jaishankar thanks Armenia for safe transit</span>
-      <span>💥 Israel says it killed Iran security chief Ali Larijani &amp; Basij commander Soleimani in overnight strikes</span>
-      <span>🏛️ Lok Sabha rejects Opposition no-confidence motion against Speaker Om Birla</span>
-      <span>🔥 10 killed in ICU fire at SCB Medical College, Cuttack — Odisha orders judicial probe</span>
-      <span>📈 Sensex crosses 75,000 — Indian markets at record high amid global volatility</span>
-      <span>✈️ Dubai International Airport resumes flights after drone strike disruption</span>
-      <span>🚀 ISRO completes CE20 cryogenic engine ground test for LVM3 heavy-lift rocket</span>
-    </div>
-  </div>
-  <span style="white-space:nowrap;color:#555;font-size:.57rem">Ranchi 28°C ☁</span>
+  <span style="white-space:nowrap;flex-shrink:0"><span class="live-dot"></span><span style="color:var(--red);font-weight:600">LIVE</span>&nbsp;&nbsp;Mon, 30 Mar 2026</span>
+  <div class="top-roll"><div class="top-inner">
+    <span>🔴 US-Israel strikes on Iran enter Day 19 — Strait of Hormuz remains closed, oil above $102/barrel</span>
+    <span>🇮🇳 India evacuates 550+ citizens from Iran; Jaishankar thanks Armenia for safe transit</span>
+    <span>💥 Israel says it killed Iran security chief Ali Larijani &amp; Basij commander Soleimani in overnight strikes</span>
+    <span>🏛️ Lok Sabha rejects Opposition no-confidence motion against Speaker Om Birla</span>
+    <span>🔥 10 killed in ICU fire at SCB Medical College, Cuttack — Odisha orders judicial probe</span>
+    <span>📈 Sensex crosses 75,000 — Indian markets at record high amid global volatility</span>
+    <span>✈️ Dubai International Airport resumes flights after drone strike disruption</span>
+    <span>🚀 ISRO completes CE20 cryogenic engine ground test for LVM3 heavy-lift rocket</span>
+    <span>🔴 US-Israel strikes on Iran enter Day 19 — Strait of Hormuz remains closed, oil above $102/barrel</span>
+    <span>🇮🇳 India evacuates 550+ citizens from Iran; Jaishankar thanks Armenia for safe transit</span>
+    <span>💥 Israel says it killed Iran security chief Ali Larijani &amp; Basij commander Soleimani in overnight strikes</span>
+    <span>🏛️ Lok Sabha rejects Opposition no-confidence motion against Speaker Om Birla</span>
+    <span>🔥 10 killed in ICU fire at SCB Medical College, Cuttack — Odisha orders judicial probe</span>
+    <span>📈 Sensex crosses 75,000 — Indian markets at record high amid global volatility</span>
+    <span>✈️ Dubai International Airport resumes flights after drone strike disruption</span>
+    <span>🚀 ISRO completes CE20 cryogenic engine ground test for LVM3 heavy-lift rocket</span>
+  </div></div>
+  <span id="live-clock">--:--:--</span>
 </div>
 
 <!-- HEADER -->
@@ -175,28 +409,44 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
       <div class="site-sub">Truth · Speed · Depth</div>
     </div>
   </div>
-  <div></div>
-  <div class="hdr-date">
-    <strong>WEDNESDAY, MARCH 18, 2026</strong>
-    Roll No: 52 &nbsp;·&nbsp; S52 Edition<br>
-    Est. 1998
+
+  <div class="weather-widget">
+    <span class="weather-icon">⛅</span>
+    <span>Jamshedpur</span>
+    <span class="temp">31°C</span>
+    <span>·</span>
+    <span>Partly Cloudy</span>
+  </div>
+
+  <div class="hdr-right">
+    <div class="hdr-controls">
+      <div class="search-wrap" id="searchWrap">
+        <input type="text" placeholder="Search news..." id="searchInput">
+        <button class="search-btn" id="searchBtn">🔍</button>
+      </div>
+      <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">🌙</button>
+    </div>
+    <div class="hdr-date">
+      <strong>MONDAY, MARCH 30, 2026</strong>
+      Roll No: 52 &nbsp;·&nbsp; S52 Edition &nbsp;·&nbsp; Est. 1998
+    </div>
   </div>
 </header>
 
 <!-- STICKY NAV -->
-<nav>
+<nav id="mainNav">
   <div class="nav-logo"><span class="nav-badge">S52</span><span>NewsPortal</span></div>
   <ul id="navLinks">
-    <li><a href="#" class="on">Home</a></li>
+    <li><a href="index.html" class="on">Home</a></li>
     <li><a href="#">Politics</a></li>
     <li><a href="#">Sports</a></li>
     <li><a href="#">Technology</a></li>
-    <li><a href="#">Contact</a></li>
+    <li><a href="contact.html">Contact</a></li>
   </ul>
   <button class="hbg" id="menuBtn"><span></span><span></span><span></span></button>
 </nav>
 
-<!-- BREAKING TICKER - real current news -->
+<!-- BREAKING TICKER -->
 <div class="ticker">
   <div class="tick-lbl"><span class="live-dot"></span>BREAKING</div>
   <div class="tick-track">
@@ -215,33 +465,26 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
   </div>
 </div>
 
-<!-- HERO — Top story: US-Israel-Iran War -->
+<!-- HERO -->
 <div class="hero-wrap">
 <section class="hero">
   <div class="hero-main">
-    <!-- SVG: War / Middle East crisis illustration -->
     <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
       <rect width="800" height="450" fill="#0a0608"/>
-      <!-- dark red sky -->
       <rect width="800" height="260" fill="#1a0408"/>
       <rect x="0" y="220" width="800" height="230" fill="#0d1018"/>
-      <!-- smoke clouds -->
       <ellipse cx="180" cy="180" rx="120" ry="55" fill="#1e0c0c" opacity=".9"/>
       <ellipse cx="420" cy="140" rx="160" ry="70" fill="#2a0808" opacity=".8"/>
       <ellipse cx="650" cy="200" rx="110" ry="50" fill="#1e0c0c" opacity=".85"/>
       <ellipse cx="320" cy="100" rx="90" ry="40" fill="#3a1010" opacity=".7"/>
       <ellipse cx="580" cy="120" rx="80" ry="35" fill="#2a0c0c" opacity=".75"/>
-      <!-- explosion glow left -->
       <circle cx="140" cy="240" r="70" fill="#ff4400" opacity=".18"/>
       <circle cx="140" cy="240" r="40" fill="#ff6600" opacity=".22"/>
       <circle cx="140" cy="240" r="18" fill="#ffaa00" opacity=".55"/>
-      <!-- explosion glow right -->
       <circle cx="620" cy="220" r="60" fill="#ff4400" opacity=".15"/>
       <circle cx="620" cy="220" r="30" fill="#ff6600" opacity=".2"/>
       <circle cx="620" cy="220" r="14" fill="#ffaa00" opacity=".5"/>
-      <!-- city skyline silhouette -->
       <rect x="0" y="295" width="800" height="155" fill="#080c14"/>
-      <!-- buildings -->
       <rect x="10" y="260" width="28" height="50" fill="#0f1520"/><rect x="42" y="245" width="20" height="65" fill="#0f1520"/>
       <rect x="66" y="255" width="35" height="55" fill="#0f1520"/><rect x="105" y="240" width="25" height="70" fill="#0f1520"/>
       <rect x="134" y="250" width="40" height="60" fill="#0f1520"/><rect x="178" y="235" width="30" height="75" fill="#0f1520"/>
@@ -253,26 +496,21 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
       <rect x="575" y="248" width="26" height="62" fill="#0f1520"/><rect x="605" y="238" width="42" height="72" fill="#0f1520"/>
       <rect x="651" y="255" width="28" height="55" fill="#0f1520"/><rect x="683" y="244" width="36" height="66" fill="#0f1520"/>
       <rect x="723" y="258" width="24" height="52" fill="#0f1520"/><rect x="751" y="246" width="32" height="64" fill="#0f1520"/>
-      <!-- building windows - lit up -->
       <rect x="16" y="266" width="5" height="4" fill="#ffcc44" opacity=".7"/><rect x="24" y="266" width="5" height="4" fill="#ffcc44" opacity=".5"/>
       <rect x="112" y="248" width="5" height="4" fill="#ffcc44" opacity=".7"/><rect x="112" y="256" width="5" height="4" fill="#ffcc44" opacity=".5"/>
       <rect x="320" y="244" width="5" height="4" fill="#ffcc44" opacity=".8"/><rect x="330" y="244" width="5" height="4" fill="#ffcc44" opacity=".5"/>
       <rect x="404" y="248" width="5" height="4" fill="#ffcc44" opacity=".6"/><rect x="414" y="248" width="5" height="4" fill="#ffcc44" opacity=".8"/>
       <rect x="548" y="242" width="5" height="4" fill="#ffcc44" opacity=".7"/><rect x="558" y="242" width="5" height="4" fill="#ffcc44" opacity=".5"/>
       <rect x="613" y="244" width="5" height="4" fill="#ffcc44" opacity=".8"/><rect x="623" y="244" width="5" height="4" fill="#ffcc44" opacity=".6"/>
-      <!-- missile trails -->
       <line x1="680" y1="30" x2="620" y2="220" stroke="#ff6600" stroke-width="1.5" opacity=".6" stroke-dasharray="8,4"/>
       <line x1="720" y1="20" x2="140" y2="240" stroke="#ff4400" stroke-width="1.5" opacity=".5" stroke-dasharray="8,4"/>
       <line x1="100" y1="50" x2="300" y2="200" stroke="#ff6600" stroke-width="1.2" opacity=".5" stroke-dasharray="6,4"/>
-      <!-- stars through smoke -->
       <circle cx="50" cy="30" r="1.1" fill="#fff" opacity=".6"/><circle cx="200" cy="18" r=".9" fill="#fff" opacity=".4"/>
       <circle cx="450" cy="22" r="1.2" fill="#fff" opacity=".5"/><circle cx="700" cy="14" r=".9" fill="#fff" opacity=".6"/>
       <circle cx="760" cy="50" r="1" fill="#fff" opacity=".4"/>
-      <!-- Iran flag colours hint top right -->
       <rect x="700" y="15" width="60" height="6" fill="#239f40" opacity=".5"/>
       <rect x="700" y="21" width="60" height="6" fill="#fff" opacity=".35"/>
       <rect x="700" y="27" width="60" height="6" fill="#d4213d" opacity=".5"/>
-      <!-- US flag hint top left -->
       <rect x="30" y="15" width="8" height="40" fill="#b22234" opacity=".6"/>
       <rect x="30" y="15" width="30" height="22" fill="#3c3b6e" opacity=".5"/>
     </svg>
@@ -284,8 +522,6 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
       <span class="hero-meta">NewsPortal World Desk &nbsp;·&nbsp;<span class="live-chip"><span class="live-dot" style="width:5px;height:5px;margin:0"></span>LIVE</span>&nbsp;·&nbsp; Updated 6 min ago &nbsp;·&nbsp; 12 min read</span>
     </div>
   </div>
-
-  <!-- SIDEBAR — real current stories -->
   <aside class="hero-side">
     <div class="ss">
       <p class="ss-cat">India <span class="live-chip"><span class="live-dot" style="width:5px;height:5px;margin:0"></span>Live</span></p>
@@ -307,7 +543,7 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
       <h3>10 Dead, 16 Burned in ICU Fire at SCB Medical College Cuttack — Judicial Probe Ordered</h3>
       <small>3 hrs ago</small>
     </div>
-    <div class="ss" style="background:#fdf8ee;margin-top:auto">
+    <div class="ss" style="background:var(--cream);margin-top:auto;transition:background .3s">
       <p style="font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--muted);letter-spacing:.1em;margin-bottom:.3rem">EDITOR'S PICK</p>
       <h3 style="font-size:.82rem">India's crude oil supply secure; refineries at full capacity despite Hormuz closure, says Petroleum Ministry</h3>
     </div>
@@ -320,54 +556,37 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
   <div class="sec-head"><h2>Latest Stories — India &amp; World</h2></div>
   <div class="grid">
 
-    <!-- Card 1: Iran War / World -->
     <article class="card">
-      <div class="ci">
-        <span class="ci-badge">World</span>
+      <div class="ci"><span class="ci-badge">World</span>
         <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <rect width="400" height="200" fill="#0a0308"/>
-          <rect width="400" height="120" fill="#1a0408"/>
+          <rect width="400" height="200" fill="#0a0308"/><rect width="400" height="120" fill="#1a0408"/>
           <ellipse cx="200" cy="110" rx="180" ry="60" fill="#2a0808" opacity=".8"/>
           <ellipse cx="100" cy="100" rx="90" ry="45" fill="#3a1010" opacity=".7"/>
-          <ellipse cx="310" cy="90" rx="80" ry="40" fill="#2a0a0a" opacity=".75"/>
-          <circle cx="80" cy="140" r="50" fill="#ff4400" opacity=".15"/>
-          <circle cx="80" cy="140" r="28" fill="#ff6600" opacity=".2"/>
-          <circle cx="80" cy="140" r="12" fill="#ffaa00" opacity=".6"/>
-          <circle cx="320" cy="130" r="44" fill="#ff4400" opacity=".14"/>
-          <circle cx="320" cy="130" r="22" fill="#ff6600" opacity=".18"/>
-          <circle cx="320" cy="130" r="10" fill="#ffaa00" opacity=".55"/>
+          <circle cx="80" cy="140" r="50" fill="#ff4400" opacity=".15"/><circle cx="80" cy="140" r="28" fill="#ff6600" opacity=".2"/><circle cx="80" cy="140" r="12" fill="#ffaa00" opacity=".6"/>
+          <circle cx="320" cy="130" r="44" fill="#ff4400" opacity=".14"/><circle cx="320" cy="130" r="22" fill="#ff6600" opacity=".18"/><circle cx="320" cy="130" r="10" fill="#ffaa00" opacity=".55"/>
           <rect x="0" y="155" width="400" height="45" fill="#080c14"/>
           <rect x="10" y="138" width="16" height="28" fill="#0c1220"/><rect x="30" y="128" width="14" height="38" fill="#0c1220"/>
-          <rect x="48" y="135" width="20" height="31" fill="#0c1220"/><rect x="72" y="125" width="18" height="41" fill="#0c1220"/>
           <rect x="160" y="132" width="22" height="34" fill="#0c1220"/><rect x="186" y="122" width="28" height="44" fill="#0c1220"/>
-          <rect x="218" y="134" width="16" height="32" fill="#0c1220"/><rect x="240" y="126" width="24" height="40" fill="#0c1220"/>
           <rect x="290" y="130" width="18" height="36" fill="#0c1220"/><rect x="312" y="120" width="26" height="46" fill="#0c1220"/>
-          <rect x="342" y="133" width="20" height="33" fill="#0c1220"/><rect x="366" y="124" width="22" height="42" fill="#0c1220"/>
           <line x1="350" y1="15" x2="320" y2="128" stroke="#ff6600" stroke-width="1.4" opacity=".6" stroke-dasharray="7,3"/>
           <line x1="380" y1="10" x2="80" y2="140" stroke="#ff4400" stroke-width="1.3" opacity=".5" stroke-dasharray="7,3"/>
-          <circle cx="40" cy="18" r="1.1" fill="#fff" opacity=".6"/><circle cx="200" cy="12" r=".9" fill="#fff" opacity=".4"/>
-          <circle cx="360" cy="20" r="1.2" fill="#fff" opacity=".5"/>
         </svg>
       </div>
       <div class="cb">
         <h3>Iran Confirms Larijani Killed; New Supreme Leader Rejects Ceasefire — "Not Time for Peace"</h3>
-        <p>Iran's SNSC confirmed Ali Larijani's death. Mojtaba Khamenei said through intermediaries that negotiations are off the table.</p>
+        <p>Iran's SNSC confirmed Ali Larijani's death. Mojtaba Khamenei said negotiations are off the table.</p>
         <div class="cf"><span>World Desk</span><span>30 min ago</span></div>
       </div>
     </article>
 
-    <!-- Card 2: Trump / NATO -->
     <article class="card">
-      <div class="ci">
-        <span class="ci-badge">Politics</span>
+      <div class="ci"><span class="ci-badge">Politics</span>
         <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
           <rect width="400" height="200" fill="#141828"/>
-          <!-- White House style building -->
           <rect x="80" y="92" width="240" height="88" fill="#1e2a46"/>
           <rect x="100" y="76" width="200" height="19" fill="#28376a"/>
           <rect x="108" y="76" width="8" height="104" rx="2" fill="#364878"/>
           <rect x="135" y="76" width="8" height="104" rx="2" fill="#364878"/>
-          <rect x="162" y="76" width="8" height="104" rx="2" fill="#364878"/>
           <rect x="258" y="76" width="8" height="104" rx="2" fill="#364878"/>
           <rect x="285" y="76" width="8" height="104" rx="2" fill="#364878"/>
           <ellipse cx="200" cy="76" rx="46" ry="17" fill="#28376a"/>
@@ -376,202 +595,198 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
           <polygon points="200,26 193,39 207,39" fill="#c9a84c"/>
           <rect x="115" y="107" width="12" height="18" rx="6" fill="#5a7ab5" opacity=".9"/>
           <rect x="148" y="107" width="12" height="18" rx="6" fill="#5a7ab5" opacity=".9"/>
-          <rect x="181" y="107" width="12" height="18" rx="6" fill="#5a7ab5" opacity=".9"/>
           <rect x="251" y="107" width="12" height="18" rx="6" fill="#5a7ab5" opacity=".9"/>
-          <rect x="284" y="107" width="12" height="18" rx="6" fill="#5a7ab5" opacity=".9"/>
-          <rect x="185" y="148" width="30" height="32" rx="3" fill="#0c1322"/>
           <rect x="66" y="178" width="268" height="9" rx="2" fill="#28376a"/>
-          <!-- US flag -->
-          <rect x="30" y="60" width="7" height="50" fill="#666"/>
-          <rect x="37" y="60" width="28" height="14" fill="#b22234"/>
-          <rect x="37" y="62" width="28" height="2.5" fill="#fff"/>
-          <rect x="37" y="65" width="28" height="2.5" fill="#fff"/>
-          <rect x="37" y="68" width="28" height="2.5" fill="#fff"/>
-          <rect x="37" y="60" width="14" height="8" fill="#3c3b6e"/>
-          <!-- NATO crossed out hint -->
           <text x="330" y="80" font-family="monospace" font-size="11" fill="#e63946" font-weight="700">NATO?</text>
           <line x1="326" y1="84" x2="372" y2="72" stroke="#e63946" stroke-width="2" opacity=".8"/>
-          <circle cx="48" cy="28" r="1.2" fill="#fff" opacity=".5"/>
-          <circle cx="340" cy="18" r="1" fill="#fff" opacity=".4"/>
         </svg>
       </div>
       <div class="cb">
         <h3>Trump Threatens NATO Exit After Allies Refuse to Help Reopen Strait of Hormuz</h3>
-        <p>Trump said the US should "rethink NATO membership" as European leaders pushed back on his demands for military support in Iran.</p>
+        <p>Trump said the US should "rethink NATO membership" as European leaders pushed back on his Iran demands.</p>
         <div class="cf"><span>Washington Bureau</span><span>1 hr ago</span></div>
       </div>
     </article>
 
-    <!-- Card 3: India Politics -->
     <article class="card">
-      <div class="ci">
-        <span class="ci-badge">India</span>
+      <div class="ci"><span class="ci-badge">India</span>
         <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
           <rect width="400" height="200" fill="#0e1428"/>
-          <!-- Parliament of India silhouette -->
           <rect x="60" y="88" width="280" height="96" fill="#182240"/>
           <rect x="80" y="72" width="240" height="20" fill="#1e2c52"/>
-          <!-- Columns -->
           <rect x="90" y="72" width="7" height="112" rx="2" fill="#2a3c6a"/>
           <rect x="112" y="72" width="7" height="112" rx="2" fill="#2a3c6a"/>
-          <rect x="134" y="72" width="7" height="112" rx="2" fill="#2a3c6a"/>
           <rect x="260" y="72" width="7" height="112" rx="2" fill="#2a3c6a"/>
           <rect x="282" y="72" width="7" height="112" rx="2" fill="#2a3c6a"/>
-          <rect x="304" y="72" width="7" height="112" rx="2" fill="#2a3c6a"/>
-          <!-- Circular dome -->
           <ellipse cx="200" cy="72" rx="50" ry="20" fill="#1e2c52"/>
           <ellipse cx="200" cy="60" rx="36" ry="28" fill="#182240"/>
-          <ellipse cx="200" cy="48" rx="24" ry="18" fill="#1e2c52"/>
-          <!-- Ashoka pillar top -->
           <rect x="197" y="22" width="7" height="26" fill="#2a3c6a"/>
           <circle cx="200" cy="20" r="6" fill="#c9a84c"/>
-          <!-- Tricolour flag -->
-          <rect x="196" y="5" width="5" height="18" fill="#888"/>
           <rect x="201" y="5" width="20" height="5" fill="#ff9933"/>
           <rect x="201" y="10" width="20" height="5" fill="#fff"/><circle cx="211" cy="12" r="2" fill="#000080"/>
           <rect x="201" y="15" width="20" height="5" fill="#138808"/>
-          <!-- Windows -->
           <rect x="100" y="102" width="12" height="18" rx="6" fill="#4060a0" opacity=".9"/>
-          <rect x="130" y="102" width="12" height="18" rx="6" fill="#4060a0" opacity=".9"/>
           <rect x="270" y="102" width="12" height="18" rx="6" fill="#4060a0" opacity=".9"/>
-          <rect x="300" y="102" width="12" height="18" rx="6" fill="#4060a0" opacity=".9"/>
           <rect x="185" y="148" width="30" height="36" rx="3" fill="#0a101e"/>
-          <rect x="55" y="182" width="290" height="9" rx="2" fill="#1e2c52"/>
-          <circle cx="40" cy="30" r="1.1" fill="#fff" opacity=".5"/>
-          <circle cx="360" cy="22" r="1" fill="#fff" opacity=".4"/>
         </svg>
       </div>
       <div class="cb">
         <h3>Lok Sabha Rejects Opposition No-Confidence Motion Against Speaker Om Birla by Voice Vote</h3>
-        <p>Seven Congress and CPI(M) MPs were suspended for unruly behaviour. Parliament adjourned amid sloganeering from opposition benches.</p>
+        <p>Seven Congress and CPI(M) MPs were suspended for unruly behaviour. Parliament adjourned amid sloganeering.</p>
         <div class="cf"><span>New Delhi Bureau</span><span>1 hr ago</span></div>
       </div>
     </article>
 
-    <!-- Card 4: Economy / Oil Crisis -->
     <article class="card">
-      <div class="ci">
-        <span class="ci-badge">Economy</span>
+      <div class="ci"><span class="ci-badge">Economy</span>
         <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
           <rect width="400" height="200" fill="#070f08"/>
           <line x1="50" y1="25" x2="50" y2="174" stroke="#153a18" stroke-width=".9"/>
           <line x1="50" y1="174" x2="385" y2="174" stroke="#153a18" stroke-width=".9"/>
           <line x1="50" y1="104" x2="385" y2="104" stroke="#153a18" stroke-width=".5" stroke-dasharray="4,4"/>
           <line x1="50" y1="72" x2="385" y2="72" stroke="#153a18" stroke-width=".5" stroke-dasharray="4,4"/>
-          <line x1="50" y1="42" x2="385" y2="42" stroke="#1a1a10" stroke-width=".5" stroke-dasharray="4,4"/>
-          <!-- Candlesticks -->
           <rect x="71" y="114" width="14" height="22" rx="1" fill="#e05050"/><line x1="78" y1="108" x2="78" y2="148" stroke="#e05050" stroke-width="1.2"/>
-          <rect x="101" y="108" width="14" height="28" rx="1" fill="#e05050"/><line x1="108" y1="100" x2="108" y2="142" stroke="#e05050" stroke-width="1.2"/>
-          <rect x="131" y="94" width="14" height="22" rx="1" fill="#00cc55"/><line x1="138" y1="88" x2="138" y2="126" stroke="#00cc55" stroke-width="1.2"/>
-          <rect x="161" y="82" width="14" height="30" rx="1" fill="#00cc55"/><line x1="168" y1="76" x2="168" y2="122" stroke="#00cc55" stroke-width="1.2"/>
-          <rect x="191" y="95" width="14" height="25" rx="1" fill="#e05050"/><line x1="198" y1="88" x2="198" y2="132" stroke="#e05050" stroke-width="1.2"/>
-          <rect x="221" y="68" width="14" height="24" rx="1" fill="#00cc55"/><line x1="228" y1="62" x2="228" y2="104" stroke="#00cc55" stroke-width="1.2"/>
-          <rect x="251" y="52" width="14" height="28" rx="1" fill="#00cc55"/><line x1="258" y1="46" x2="258" y2="90" stroke="#00cc55" stroke-width="1.2"/>
-          <rect x="281" y="40" width="14" height="26" rx="1" fill="#00cc55"/><line x1="288" y1="34" x2="288" y2="78" stroke="#00cc55" stroke-width="1.2"/>
-          <rect x="311" y="32" width="14" height="28" rx="1" fill="#00cc55"/><line x1="318" y1="26" x2="318" y2="72" stroke="#00cc55" stroke-width="1.2"/>
-          <rect x="341" y="24" width="14" height="26" rx="1" fill="#00cc55"/><line x1="348" y1="18" x2="348" y2="62" stroke="#00cc55" stroke-width="1.2"/>
+          <rect x="101" y="108" width="14" height="28" rx="1" fill="#e05050"/>
+          <rect x="131" y="94" width="14" height="22" rx="1" fill="#00cc55"/>
+          <rect x="161" y="82" width="14" height="30" rx="1" fill="#00cc55"/>
+          <rect x="221" y="68" width="14" height="24" rx="1" fill="#00cc55"/>
+          <rect x="251" y="52" width="14" height="28" rx="1" fill="#00cc55"/>
+          <rect x="281" y="40" width="14" height="26" rx="1" fill="#00cc55"/>
+          <rect x="311" y="32" width="14" height="28" rx="1" fill="#00cc55"/>
+          <rect x="341" y="24" width="14" height="26" rx="1" fill="#00cc55"/>
           <polyline points="78,136 108,124 138,104 168,92 198,112 228,78 258,66 288,54 318,44 348,36" fill="none" stroke="#c9a84c" stroke-width="2.3"/>
           <polygon points="354,26 372,26 363,12" fill="#00cc55"/>
-          <!-- $102 oil price label -->
-          <line x1="50" y1="42" x2="385" y2="42" stroke="#e63946" stroke-width=".9" stroke-dasharray="5,3" opacity=".7"/>
           <text x="56" y="38" font-family="monospace" font-size="8" fill="#e63946" opacity=".9">BRENT CRUDE $102.69/bbl ▲</text>
           <text x="56" y="190" font-family="monospace" font-size="8.5" fill="#00cc55" opacity=".8">BSE SENSEX 75,034  +1.08%  ▲</text>
         </svg>
       </div>
       <div class="cb">
         <h3>Sensex Hits 75,000 as Markets Rally; Brent Crude Tops $102 on Hormuz Closure</h3>
-        <p>Indian equities defied global oil shock. Brent crude jumped $2.48 to $102.69 as Gulf energy exports dropped 60% due to the Iran war.</p>
+        <p>Indian equities defied global oil shock. Gulf energy exports dropped 60% due to the Iran war.</p>
         <div class="cf"><span>Markets Desk</span><span>2 hrs ago</span></div>
       </div>
     </article>
 
-    <!-- Card 5: Odisha Hospital Fire -->
     <article class="card">
-      <div class="ci">
-        <span class="ci-badge">Odisha</span>
+      <div class="ci"><span class="ci-badge">Odisha</span>
         <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-          <rect width="400" height="200" fill="#0e0608"/>
           <rect width="400" height="200" fill="#180c04" opacity=".9"/>
-          <!-- hospital building -->
           <rect x="100" y="80" width="200" height="110" fill="#1e1210"/>
           <rect x="85" y="76" width="230" height="12" fill="#2a1a14"/>
-          <!-- hospital cross -->
           <rect x="188" y="50" width="24" height="32" rx="3" fill="#cc2222"/>
           <rect x="176" y="62" width="48" height="10" rx="3" fill="#cc2222"/>
-          <rect x="196" y="38" width="8" height="14" fill="#888"/>
-          <!-- windows -->
           <rect x="116" y="100" width="18" height="22" rx="3" fill="#ff9933" opacity=".7"/>
-          <rect x="150" y="100" width="18" height="22" rx="3" fill="#ff6600" opacity=".8"/>
-          <rect x="232" y="100" width="18" height="22" rx="3" fill="#ff9933" opacity=".7"/>
           <rect x="266" y="100" width="18" height="22" rx="3" fill="#ff4400" opacity=".9"/>
-          <!-- fire / flames -->
           <ellipse cx="270" cy="100" rx="30" ry="40" fill="#ff4400" opacity=".35"/>
           <ellipse cx="270" cy="100" rx="18" ry="26" fill="#ff6600" opacity=".5"/>
-          <ellipse cx="270" cy="100" rx="10" ry="16" fill="#ffaa00" opacity=".7"/>
-          <ellipse cx="155" cy="96" rx="22" ry="30" fill="#ff4400" opacity=".25"/>
-          <ellipse cx="155" cy="96" rx="12" ry="18" fill="#ff6600" opacity=".4"/>
-          <!-- smoke -->
           <ellipse cx="270" cy="60" rx="40" ry="22" fill="#333" opacity=".6"/>
-          <ellipse cx="240" cy="42" rx="30" ry="16" fill="#444" opacity=".5"/>
-          <ellipse cx="155" cy="55" rx="30" ry="16" fill="#333" opacity=".5"/>
-          <!-- ground / ambulance -->
           <rect x="0" y="188" width="400" height="12" fill="#0a0806"/>
           <rect x="40" y="168" width="65" height="30" rx="4" fill="#cc2222"/>
-          <rect x="40" y="168" width="65" height="14" rx="2" fill="#dd3333"/>
-          <circle cx="55" cy="198" r="8" fill="#333"/><circle cx="55" cy="198" r="4" fill="#555"/>
-          <circle cx="92" cy="198" r="8" fill="#333"/><circle cx="92" cy="198" r="4" fill="#555"/>
-          <rect x="62" y="172" width="16" height="8" rx="1" fill="#fff" opacity=".8"/>
+          <circle cx="55" cy="198" r="8" fill="#333"/><circle cx="92" cy="198" r="8" fill="#333"/>
           <text x="44" y="182" font-family="monospace" font-size="6" fill="#fff" opacity=".9">AMBULANCE</text>
-          <circle cx="358" cy="30" r="1.2" fill="#fff" opacity=".5"/>
-          <circle cx="28" cy="22" r="1" fill="#fff" opacity=".4"/>
         </svg>
       </div>
       <div class="cb">
         <h3>10 Patients Killed, 16 Burned in ICU Fire at SCB Medical College, Cuttack — Odisha Probes</h3>
-        <p>A blaze broke out in the Intensive Care Unit of SCB Medical College Hospital. Odisha government has ordered a judicial inquiry.</p>
+        <p>A blaze broke out in the Intensive Care Unit. Odisha government has ordered a judicial inquiry.</p>
         <div class="cf"><span>Cuttack Correspondent</span><span>3 hrs ago</span></div>
       </div>
     </article>
 
-    <!-- Card 6: West Bengal Elections -->
     <article class="card">
-      <div class="ci">
-        <span class="ci-badge">Elections</span>
+      <div class="ci"><span class="ci-badge">Elections</span>
         <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
           <rect width="400" height="200" fill="#0a0e1a"/>
-          <!-- ballot box -->
           <rect x="140" y="80" width="120" height="90" rx="6" fill="#1e2840" stroke="#2e3c5a" stroke-width="1.5"/>
           <rect x="140" y="80" width="120" height="22" rx="6" fill="#28365a"/>
           <rect x="185" y="83" width="30" height="8" rx="3" fill="#0d1222"/>
-          <!-- ballot papers going in -->
           <rect x="183" y="55" width="34" height="22" rx="2" fill="#fff" opacity=".92"/>
-          <line x1="189" y1="62" x2="211" y2="62" stroke="#888" stroke-width="1.2"/>
-          <line x1="189" y1="67" x2="205" y2="67" stroke="#888" stroke-width="1.2"/>
           <circle cx="214" cy="65" r="4" fill="#138808" opacity=".8"/>
-          <line x1="211" y1="62" x2="214" y2="65" stroke="#138808" stroke-width="1.5"/>
-          <line x1="214" y1="65" x2="218" y2="59" stroke="#138808" stroke-width="1.5"/>
-          <!-- hand dropping ballot -->
           <path d="M192,50 Q196,44 200,44 Q204,44 208,50 L208,58 L192,58 Z" fill="#c8a882" opacity=".8"/>
-          <!-- result bars -->
           <rect x="42" y="130" width="22" height="48" rx="2" fill="#ff9933" opacity=".9"/><text x="48" y="128" font-family="monospace" font-size="7" fill="#ff9933">BJP</text>
           <rect x="80" y="110" width="22" height="68" rx="2" fill="#1a6e3a" opacity=".9"/><text x="83" y="108" font-family="monospace" font-size="7" fill="#1a6e3a">TMC</text>
           <rect x="118" y="148" width="22" height="30" rx="2" fill="#cc2222" opacity=".9"/><text x="118" y="146" font-family="monospace" font-size="7" fill="#cc2222">INC</text>
-          <!-- map of Bengal outline (simplified) -->
           <path d="M295,60 Q320,55 340,70 Q355,88 350,115 Q340,140 320,155 Q305,162 290,148 Q278,130 282,105 Q286,80 295,60Z" fill="#1a2840" stroke="#2a3c5a" stroke-width="1.2"/>
-          <circle cx="315" cy="105" r="4" fill="#c9a84c"/><text x="308" y="102" font-family="monospace" font-size="6" fill="#c9a84c">WB</text>
+          <circle cx="315" cy="105" r="4" fill="#c9a84c"/>
           <text x="272" y="172" font-family="monospace" font-size="6.5" fill="#888">2026 ASSEMBLY POLLS</text>
-          <circle cx="380" cy="30" r="1.1" fill="#fff" opacity=".5"/>
-          <circle cx="28" cy="24" r="1" fill="#fff" opacity=".4"/>
         </svg>
       </div>
       <div class="cb">
         <h3>WB Polls 2026: EC Announces Single-Phase Elections; BJP Releases 144-Candidate List</h3>
-        <p>The Election Commission announced West Bengal will vote in a single phase. BJP's first list targets TMC's strongholds in North Bengal.</p>
+        <p>The Election Commission announced West Bengal will vote in a single phase. BJP targets TMC strongholds.</p>
         <div class="cf"><span>Kolkata Bureau</span><span>4 hrs ago</span></div>
       </div>
     </article>
 
   </div>
+</div>
+
+<!-- READER POLL WIDGET -->
+<div class="poll-section">
+  <div class="poll-card">
+    <div>
+      <div class="poll-tag">📊 Reader Poll · Live</div>
+      <h3>What should India's priority be amid the Iran-Israel war?</h3>
+      <div class="poll-q">Cast your vote below — results update in real time.</div>
+      <div class="poll-opt" id="pollOpts">
+        <div>
+          <button class="poll-btn" onclick="vote(0)">🕊️ Push for diplomatic ceasefire</button>
+          <div class="poll-bar"><div class="poll-fill" id="pf0"></div></div>
+          <div class="poll-pct" id="pp0">—</div>
+        </div>
+        <div>
+          <button class="poll-btn" onclick="vote(1)">🛢️ Secure energy supply first</button>
+          <div class="poll-bar"><div class="poll-fill" id="pf1"></div></div>
+          <div class="poll-pct" id="pp1">—</div>
+        </div>
+        <div>
+          <button class="poll-btn" onclick="vote(2)">✈️ Evacuate all Indians from the region</button>
+          <div class="poll-bar"><div class="poll-fill" id="pf2"></div></div>
+          <div class="poll-pct" id="pp2">—</div>
+        </div>
+        <div>
+          <button class="poll-btn" onclick="vote(3)">🤝 Stay neutral, protect trade ties</button>
+          <div class="poll-bar"><div class="poll-fill" id="pf3"></div></div>
+          <div class="poll-pct" id="pp3">—</div>
+        </div>
+      </div>
+      <p class="poll-note" id="pollNote">Click an option to cast your vote.</p>
+    </div>
+    <div class="poll-stats">
+      <div class="stat-box">
+        <div class="stat-num" id="totalVotes">8,241</div>
+        <div class="stat-lbl">Total Votes</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="stat-num" style="font-size:1.2rem;color:var(--gold)">Live</div>
+          <div class="stat-lbl">Updating</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num" style="font-size:1.2rem">147</div>
+          <div class="stat-lbl">Countries</div>
+        </div>
+      </div>
+      <div class="stat-box" style="border-left:3px solid var(--gold)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--muted);line-height:1.8">
+          Poll closes: <strong style="color:var(--txt)">Mar 31, 11:59 PM</strong><br>
+          Methodology: Single vote per browser session.<br>
+          Results are indicative, not scientific.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NEWSLETTER -->
+<div class="newsletter">
+  <h3>Get the Morning Briefing</h3>
+  <p>TOP STORIES · DELIVERED DAILY AT 7:00 AM · FREE FOREVER</p>
+  <div class="nl-form">
+    <input type="email" placeholder="your@email.com" id="nlEmail">
+    <button onclick="nlSubmit()">Subscribe →</button>
+  </div>
+  <div class="nl-success" id="nlSuccess">✓ You're subscribed! Check your inbox for confirmation.</div>
 </div>
 
 <!-- FOOTER -->
@@ -587,7 +802,7 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
     <div class="fc">
       <h4>Sections</h4>
       <ul>
-        <li><a href="#">Home</a></li>
+        <li><a href="index.html">Home</a></li>
         <li><a href="#">Politics</a></li>
         <li><a href="#">Sports</a></li>
         <li><a href="#">Technology</a></li>
@@ -601,22 +816,106 @@ footer{background:var(--dk);color:#444;padding:2.5rem 2rem 1.2rem}
         14 Press House Lane<br>New Delhi — 110001<br><br>
         <a href="tel:+911123456789">+91 11 2345 6789</a><br>
         <a href="mailto:newsdesk@s52portal.in">newsdesk@s52portal.in</a><br><br>
-        Tips: <a href="mailto:tips@s52portal.in">tips@s52portal.in</a>
+        Tips: <a href="mailto:tips@s52portal.in">tips@s52portal.in</a><br><br>
+        <a href="contact.html" style="color:var(--gold);font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em">→ Contact Page</a>
       </address>
     </div>
   </div>
   <div class="fbot">
     <span>&copy; 2026 S52 NewsPortal Media Pvt. Ltd. All rights reserved. &nbsp;·&nbsp; <span style="color:var(--gold)">Roll No: 52</span></span>
-    <span><a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a> &nbsp;·&nbsp; <a href="#">Advertise</a> &nbsp;·&nbsp; <a href="#">Corrections</a></span>
+    <span><a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a> &nbsp;·&nbsp; <a href="#">Advertise</a> &nbsp;·&nbsp; <a href="contact.html">Corrections</a></span>
   </div>
 </footer>
 
 <script>
-  document.getElementById('menuBtn').onclick = () =>
-    document.getElementById('navLinks').classList.toggle('open');
-  document.querySelectorAll('#navLinks a').forEach(a =>
-    a.addEventListener('click', () =>
-      document.getElementById('navLinks').classList.remove('open')));
+// ── LIVE CLOCK ──
+function updateClock(){
+  const now=new Date();
+  const t=now.toLocaleTimeString('en-IN',{hour12:false,timeZone:'Asia/Kolkata'});
+  document.getElementById('live-clock').textContent='IST '+t;
+}
+updateClock();setInterval(updateClock,1000);
+
+// ── READING PROGRESS BAR ──
+window.addEventListener('scroll',()=>{
+  const el=document.documentElement;
+  const pct=el.scrollTop/(el.scrollHeight-el.clientHeight)*100;
+  document.getElementById('progress-bar').style.width=pct+'%';
+  // back to top
+  document.getElementById('back-top').classList.toggle('visible',el.scrollTop>400);
+  // nav shadow
+  document.getElementById('mainNav').classList.toggle('scrolled',el.scrollTop>80);
+});
+
+// ── DARK MODE ──
+const btn=document.getElementById('themeToggle');
+btn.onclick=()=>{
+  const html=document.documentElement;
+  const dark=html.dataset.theme==='dark';
+  html.dataset.theme=dark?'light':'dark';
+  btn.textContent=dark?'🌙':'☀️';
+  localStorage.setItem('s52theme',html.dataset.theme);
+};
+// restore saved theme
+const saved=localStorage.getItem('s52theme');
+if(saved){document.documentElement.dataset.theme=saved;btn.textContent=saved==='dark'?'☀️':'🌙';}
+
+// ── SEARCH ──
+const sw=document.getElementById('searchWrap');
+document.getElementById('searchBtn').onclick=()=>{
+  sw.classList.toggle('open');
+  if(sw.classList.contains('open'))document.getElementById('searchInput').focus();
+};
+document.getElementById('searchInput').onkeydown=e=>{
+  if(e.key==='Escape')sw.classList.remove('open');
+};
+
+// ── HAMBURGER ──
+const menuBtn=document.getElementById('menuBtn');
+menuBtn.onclick=()=>{
+  menuBtn.classList.toggle('open');
+  document.getElementById('navLinks').classList.toggle('open');
+};
+document.querySelectorAll('#navLinks a').forEach(a=>a.addEventListener('click',()=>{
+  menuBtn.classList.remove('open');
+  document.getElementById('navLinks').classList.remove('open');
+}));
+
+// ── POLL ──
+const votes=[3120,2480,1850,791];
+let voted=false;
+function vote(i){
+  if(voted)return;
+  voted=true;
+  votes[i]++;
+  const total=votes.reduce((a,b)=>a+b,0);
+  document.getElementById('totalVotes').textContent=(8241+1).toLocaleString('en-IN');
+  votes.forEach((_,j)=>{
+    const pct=Math.round(votes[j]/total*100);
+    document.getElementById('pf'+j).style.width=pct+'%';
+    document.getElementById('pp'+j).textContent=pct+'% ('+votes[j].toLocaleString('en-IN')+' votes)';
+    document.querySelectorAll('.poll-btn')[j].classList.add('voted');
+    document.querySelectorAll('.poll-btn')[j].disabled=true;
+  });
+  document.getElementById('pollNote').textContent='✓ Thank you for voting!';
+}
+
+// ── NEWSLETTER ──
+function nlSubmit(){
+  const v=document.getElementById('nlEmail').value;
+  if(!v||!v.includes('@'))return;
+  document.querySelector('.nl-form').style.display='none';
+  document.getElementById('nlSuccess').style.display='block';
+}
+
+// ── LOGO EASTER EGG ──
+document.querySelector('.logo-circle').addEventListener('click',()=>{
+  document.querySelector('.logo-circle').style.animation='spin 0.6s ease';
+  setTimeout(()=>document.querySelector('.logo-circle').style.animation='',700);
+});
 </script>
+<style>
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style>
 </body>
 </html>
